@@ -111,6 +111,17 @@ class Linker:
                     if is_verbose():
                         print("Using shared library '%s' instead of '%s'." % (ret, libname))
                     return ret
+            # Follow symlinks to get the versioned soname.
+            if os.path.islink(current_libname):
+                ret = os.path.basename(os.path.realpath(current_libname))
+                # Strip the micro version to get the soname (e.g. libSDL3.so.0.4.0 -> libSDL3.so.0).
+                soname_match = re.match(r'(lib.+\.so\.\d+)\.\d+', ret)
+                if soname_match:
+                    ret = soname_match.group(1)
+                if ret != libname:
+                    if is_verbose():
+                        print("Using shared library '%s' instead of '%s'." % (ret, libname))
+                    return ret
             # Stop at first match.
             break
         return libname
