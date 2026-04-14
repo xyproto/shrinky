@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='Shrinky',
-      version='1.0',
+      version='1.0.1',
       description='Build small executables (dnload fork, for Arch Linux)', # dnload is here: https://github.com/faemiyah/dnload
       url='https://github.com/xyproto/shrinky',
       author='Alexander F. Rødseth',
