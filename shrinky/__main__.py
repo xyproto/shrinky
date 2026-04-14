@@ -993,8 +993,8 @@ def main():
     extra_linker_flags = []
     include_directories = [PATH_VIDEOCORE + "/include", PATH_VIDEOCORE + "/include/interface/vcos/pthreads", PATH_VIDEOCORE + "/include/interface/vmcs_host/linux",
                            "/usr/include/freetype2/", "/usr/include/SDL3", "/usr/local/include", "/usr/local/include/freetype2/", "/usr/local/include/SDL3"]
-    library_directories = ["/lib", "/lib/x86_64-linux-gnu", PATH_VIDEOCORE + "/lib", "/usr/lib",
-                           "/usr/lib/arm-linux-gnueabihf", "/usr/lib/gcc/arm-linux-gnueabihf/4.9/", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]
+    library_directories = ["/lib", "/lib64", "/lib/x86_64-linux-gnu", PATH_VIDEOCORE + "/lib", "/usr/lib",
+                           "/usr/lib64", "/usr/lib/arm-linux-gnueabihf", "/usr/lib/gcc/arm-linux-gnueabihf/4.9/", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]
     opengl_reason = None
     opengl_version = None
     program_name = os.path.basename(sys.argv[0])
