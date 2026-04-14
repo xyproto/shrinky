@@ -1561,3 +1561,9 @@ dnload r2 (2014-05-31)
 
 dnload r1 (2014-05-30)
   * First public version.
+
+
+### General info about this fork
+
+* Version: 1.0.1
+* License: BSD-3
