@@ -24,7 +24,7 @@ These issues are fixed in `shrinky`, but were problematic when using `dnload` on
 
 Optionally:
 
-* SDL2
+* SDL3
 * GLEW
 * GLFW
 * Vulkan (Vulkan and GLFW support is under development)
@@ -1487,8 +1487,8 @@ dnload r13 (2016-11-25)
   * Better LZMA compression parameters.
   * Add Freetype support.
   * Add Mali support.
-  * Add SDL2 support.
-  * Use SDL2 as the default abstraction layer.
+  * Add SDL3 support.
+  * Use SDL3 as the default abstraction layer.
   * Split link into multiple phases to allow adding missing symbols.
   * Add very rudimentary (for now) missing symbols to enable armel build.
   * Add template system to allow easier generation of source files.

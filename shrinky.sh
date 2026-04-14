@@ -15,7 +15,7 @@ shift
 SRCDIR="$(dirname $FILENAME)"
 [ -f "$SRCDIR/shrinky.h" ] || touch "$SRCDIR/shrinky.h"
 if [ -d "/usr/lib/arm-linux-gnueabihf/mali-egl" ]; then # Mali
-  python -m shrinky -v "$FILENAME" --rpath "/usr/local/lib" -lc -ldl -lgcc -lm -lEGL -lGLESv2 -lSDL2 -m dlfcn "$@"
+  python -m shrinky -v "$FILENAME" --rpath "/usr/local/lib" -lc -ldl -lgcc -lm -lEGL -lGLESv2 -lSDL3 -m dlfcn "$@"
 else
   python -m shrinky -v "$FILENAME" "$@"
 fi
