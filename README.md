@@ -32,7 +32,7 @@ Optionally:
 
 Quick installation of dependencies:
 
-    pacman --needed -Sy base-devel elfkickers glew glfw sdl2 vulkan-devel
+    pacman --needed -Sy base-devel elfkickers glew glfw sdl3 vulkan-devel
 
 ## Quick start
 

@@ -1,11 +1,14 @@
+.PHONY: all clean install uninstall
+
 PREFIX ?= /usr
 PYTHON ?= python3
 SITE_PACKAGES := $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
 
-.PHONY: install uninstall
-
 all:
 	@echo 'Nothing to build.'
+
+clean:
+	@echo 'Nothing to clean.'
 
 install:
 	install -d "$(DESTDIR)$(SITE_PACKAGES)/shrinky"

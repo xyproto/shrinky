@@ -273,17 +273,28 @@ g_library_definition_sdl = LibraryDefinition("SDL", (
     ("void", "SDL_WaitThread", "SDL_Thread*", "int*"),
 ))
 
-g_library_definition_sdl2 = LibraryDefinition("SDL2", (
-    ("SDL_Renderer*", "SDL_CreateRenderer", "SDL_Window*", "int", "Uint32"),
-    ("SDL_Thread*", "SDL_CreateThread", "int (*)(void*)", "const char*", "void*"),
-    ("SDL_Window*", "SDL_CreateWindow", "const char*", "int", "int", "int", "int", "Uint32"),
-    ("int", "SDL_CreateWindowAndRenderer", "int", "int", "Uint32", "SDL_Window**", "SDL_Renderer**"),
+g_library_definition_sdl3 = LibraryDefinition("SDL3", (
+    ("bool", "SDL_Init", "SDL_InitFlags"),
+    ("void", "SDL_Quit"),
+    ("bool", "SDL_PollEvent", "SDL_Event*"),
+    ("uint64_t", "SDL_GetTicks"),
+    ("void", "SDL_Delay", "uint32_t"),
+    ("bool", "SDL_ShowCursor"),
+    ("bool", "SDL_HideCursor"),
+    ("SDL_Window*", "SDL_CreateWindow", "const char*", "int", "int", "SDL_WindowFlags"),
+    ("SDL_Renderer*", "SDL_CreateRenderer", "SDL_Window*", "const char*"),
+    ("bool", "SDL_CreateWindowAndRenderer", "const char*", "int", "int", "SDL_WindowFlags", "SDL_Window**", "SDL_Renderer**"),
     ("SDL_GLContext", "SDL_GL_CreateContext", "SDL_Window*"),
-    ("int", "SDL_GL_SetAttribute", "SDL_GLattr", "int"),
-    ("void", "SDL_GL_SwapWindow", "SDL_Window*"),
-    ("int", "SDL_LockMutex", "SDL_mutex*"),
-    ("int", "SDL_RenderSetLogicalSize", "SDL_Renderer*", "int", "int"),
-    ("int", "SDL_UnlockMutex", "SDL_mutex*"),
+    ("bool", "SDL_GL_SetAttribute", "SDL_GLattr", "int"),
+    ("bool", "SDL_GL_SwapWindow", "SDL_Window*"),
+    ("SDL_Thread*", "SDL_CreateThread", "SDL_ThreadFunction", "const char*", "void*"),
+    ("void", "SDL_LockMutex", "SDL_Mutex*"),
+    ("void", "SDL_UnlockMutex", "SDL_Mutex*"),
+    ("bool", "SDL_SetRenderLogicalPresentation", "SDL_Renderer*", "int", "int", "SDL_RendererLogicalPresentation"),
+    ("SDL_AudioStream*", "SDL_OpenAudioDeviceStream", "SDL_AudioDeviceID", "const SDL_AudioSpec*", "SDL_AudioStreamCallback", "void*"),
+    ("bool", "SDL_ResumeAudioStreamDevice", "SDL_AudioStream*"),
+    ("bool", "SDL_PauseAudioStreamDevice", "SDL_AudioStream*"),
+    ("bool", "SDL_PutAudioStreamData", "SDL_AudioStream*", "const void*", "int"),
 ))
 
 g_library_definition_vulkan = LibraryDefinition("Vulkan", (
@@ -306,6 +317,6 @@ g_library_definitions = (
     g_library_definition_m,
     g_library_definition_png,
     g_library_definition_sdl,
-    g_library_definition_sdl2,
+    g_library_definition_sdl3,
     g_library_definition_sndfile,
 )

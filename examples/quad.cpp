@@ -222,7 +222,7 @@ void _start()
   shrinky_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   shrinky_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
-  g_sdl_window = shrinky_SDL_CreateWindow(NULL, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_W,
+  g_sdl_window = shrinky_SDL_CreateWindow(NULL, SCREEN_W,
       SCREEN_H, SDL_WINDOW_OPENGL | (FLAG_FULLSCREEN ? SDL_WINDOW_FULLSCREEN : 0));
 #if defined(SHRINKY_GLESV2) && defined(SHRINKY_VIDEOCORE)
   videocore_create_native_window(SCREEN_W, SCREEN_H);
@@ -230,7 +230,7 @@ void _start()
 #else
   shrinky_SDL_GL_CreateContext(g_sdl_window);
 #endif
-  shrinky_SDL_ShowCursor(0);
+  shrinky_SDL_HideCursor();
 
 #if defined(USE_LD)
   glewInit();
@@ -261,7 +261,7 @@ void _start()
 
     shrinky_SDL_PollEvent(&event);
 
-    if((curr_ticks >= INTRO_LENGTH) || (event.type == SDL_KEYDOWN))
+    if((curr_ticks >= INTRO_LENGTH) || (event.type == SDL_EVENT_KEY_DOWN))
     {
       break;
     }

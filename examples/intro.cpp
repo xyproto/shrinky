@@ -55,13 +55,13 @@ namespace po = boost::program_options;
 
 /// \cond
 #if (4 == AUDIO_SAMPLE_SIZE)
-#define AUDIO_SAMPLE_TYPE_SDL AUDIO_F32SYS
+#define AUDIO_SAMPLE_TYPE_SDL SDL_AUDIO_F32
 typedef float sample_t;
 #elif (2 == AUDIO_SAMPLE_SIZE)
-#define AUDIO_SAMPLE_TYPE_SDL AUDIO_S16SYS
+#define AUDIO_SAMPLE_TYPE_SDL SDL_AUDIO_S16
 typedef int16_t sample_t;
 #elif (1 == AUDIO_SAMPLE_SIZE)
-#define AUDIO_SAMPLE_TYPE_SDL AUDIO_U8
+#define AUDIO_SAMPLE_TYPE_SDL SDL_AUDIO_U8
 typedef uint8_t sample_t;
 #else
 #error "invalid audio sample size"
@@ -197,33 +197,21 @@ static float frand(float op)
 /// \param userdata Not used.
 /// \param stream Target stream.
 /// \param len Number of bytes to write.
-static void audio_callback(void *userdata, Uint8 *stream, int len)
+static void audio_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount)
 {
   (void)userdata;
+  (void)total_amount;
 
-  for(int ii = 0; (ii < len); ++ii)
-  {
-    stream[ii] = g_audio_buffer[g_audio_position + ii];
-  }
-  g_audio_position += len;
+  shrinky_SDL_PutAudioStreamData(stream, g_audio_buffer + g_audio_position, additional_amount);
+  g_audio_position += additional_amount;
 }
 
 /// SDL audio specification struct.
 static SDL_AudioSpec audio_spec =
 {
-  AUDIO_SAMPLERATE,
   AUDIO_SAMPLE_TYPE_SDL,
   AUDIO_CHANNELS,
-  0,
-#if defined(USE_LD)
-  4096,
-#else
-  256, // ~172.3Hz, lower values seem to cause underruns
-#endif
-  0,
-  0,
-  audio_callback,
-  NULL
+  AUDIO_SAMPLERATE,
 };
 
 //######################################
@@ -664,7 +652,7 @@ void _start()
   shrinky_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   shrinky_SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
-  g_sdl_window = shrinky_SDL_CreateWindow(NULL, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+  g_sdl_window = shrinky_SDL_CreateWindow(NULL,
       static_cast<int>(screen_w), static_cast<int>(screen_h),
       DEFAULT_SDL_WINDOW_FLAGS | (flag_fullscreen ? SDL_WINDOW_FULLSCREEN : 0));
 #if defined(SHRINKY_GLESV2) && defined(SHRINKY_VIDEOCORE)
@@ -683,7 +671,10 @@ void _start()
 #else
   shrinky_SDL_GL_CreateContext(g_sdl_window);
 #endif
-  shrinky_SDL_ShowCursor(g_flag_developer);
+  if(!g_flag_developer)
+  {
+    shrinky_SDL_HideCursor();
+  }
 
 #if defined(USE_LD)
 #if !defined(SHRINKY_GLESV2)
@@ -766,8 +757,7 @@ void _start()
     SDL_Event event;
     unsigned frame_idx = 0;
 
-    // audio
-    SDL_PauseAudio(1);
+    // audio (not started, no need to pause in SDL3)
 
     write_audio(g_audio_buffer, INTRO_LENGTH);
 
@@ -781,7 +771,7 @@ void _start()
         break;
       }
 
-      if(SDL_PollEvent(&event) && (event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
+      if(SDL_PollEvent(&event) && (event.type == SDL_EVENT_KEY_DOWN) && (event.key.key == SDLK_ESCAPE))
       {
         break;
       }
@@ -798,12 +788,12 @@ void _start()
 
   if(!g_flag_developer)
   {
-    SDL_OpenAudio(&audio_spec, NULL);
-    SDL_PauseAudio(0);
+    SDL_AudioStream *audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audio_spec, audio_callback, NULL);
+    SDL_ResumeAudioStreamDevice(audio_stream);
   }
 #else
-  shrinky_SDL_OpenAudio(&audio_spec, NULL);
-  shrinky_SDL_PauseAudio(0);
+  SDL_AudioStream *audio_stream = shrinky_SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audio_spec, audio_callback, NULL);
+  shrinky_SDL_ResumeAudioStreamDevice(audio_stream);
 #endif
 
 #if defined(USE_LD)
@@ -833,35 +823,35 @@ void _start()
 #if defined(USE_LD)
     while(SDL_PollEvent(&event))
     {
-      if(SDL_QUIT == event.type)
+      if(SDL_EVENT_QUIT == event.type)
       {
         quit = true;
       }
-      else if(SDL_KEYDOWN == event.type)
+      else if(SDL_EVENT_KEY_DOWN == event.type)
       {
-        switch(event.key.keysym.sym)
+        switch(event.key.key)
         {
-          case SDLK_a:
+          case SDLK_A:
             move_left = 1;
             break;
 
-          case SDLK_d:
+          case SDLK_D:
             move_right = 1;
             break;
 
-          case SDLK_e:
+          case SDLK_E:
             move_up = 1;
             break;
 
-          case SDLK_q:
+          case SDLK_Q:
             move_down = 1;
             break;
 
-          case SDLK_s:
+          case SDLK_S:
             move_backward = 1;
             break;
 
-          case SDLK_w:
+          case SDLK_W:
             move_forward = 1;
             break;
 
@@ -906,31 +896,31 @@ void _start()
             break;
         }
       }
-      else if(SDL_KEYUP == event.type)
+      else if(SDL_EVENT_KEY_UP == event.type)
       {
-        switch(event.key.keysym.sym)
+        switch(event.key.key)
         {
-          case SDLK_a:
+          case SDLK_A:
             move_left = 0;
             break;
 
-          case SDLK_d:
+          case SDLK_D:
             move_right = 0;
             break;
 
-          case SDLK_e:
+          case SDLK_E:
             move_up = 0;
             break;
 
-          case SDLK_q:
+          case SDLK_Q:
             move_down = 0;
             break;
 
-          case SDLK_s:
+          case SDLK_S:
             move_backward = 0;
             break;
 
-          case SDLK_w:
+          case SDLK_W:
             move_forward = 0;
             break;
 
@@ -949,21 +939,21 @@ void _start()
             break;
         }
       }
-      else if(SDL_MOUSEBUTTONDOWN == event.type)
+      else if(SDL_EVENT_MOUSE_BUTTON_DOWN == event.type)
       {
         if(1 == event.button.button)
         {
           mouse_look = 1;
         }
       }
-      else if(SDL_MOUSEBUTTONUP == event.type)
+      else if(SDL_EVENT_MOUSE_BUTTON_UP == event.type)
       {
         if(1 == event.button.button)
         {
           mouse_look = 0;
         }
       }
-      else if(SDL_MOUSEMOTION == event.type)
+      else if(SDL_EVENT_MOUSE_MOTION == event.type)
       {
         if(0 != mouse_look)
         {
@@ -971,7 +961,7 @@ void _start()
           mouse_look_y += event.motion.yrel;
         }
       }
-      else if(SDL_WINDOWEVENT == event.type)
+      else if(event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
       {
         if(!flag_fullscreen)
         {
@@ -1069,7 +1059,7 @@ void _start()
 
     shrinky_SDL_PollEvent(&event);
     
-    if((curr_ticks >= INTRO_LENGTH) || (event.type == SDL_KEYDOWN))
+    if((curr_ticks >= INTRO_LENGTH) || (event.type == SDL_EVENT_KEY_DOWN))
     {
       break;
     }

@@ -21,3 +21,6 @@ examples/hello_world
 examples/intro
 examples/quad
 
+build/
+*.egg-info/
+dist/

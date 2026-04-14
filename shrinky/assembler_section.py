@@ -135,6 +135,11 @@ class AssemblerSection:
             match = re.match(r'\s*sub.*\s+[^\d]*(\d+),\s*%(rsp|esp)', current_line, re.IGNORECASE)
             if match:
                 total_decrement = int(match.group(1)) + stack_decrement + stack_save_decrement
+                # _start is entered by the kernel with RSP 16-byte aligned, but the
+                # compiler assumes a call pushed a return address (RSP = 8 mod 16).
+                # Add 8 bytes to fix the alignment.
+                if op == "_start":
+                    total_decrement += 8
                 self.__content[jj] = re.sub(r'\d+', str(total_decrement), current_line)
             break
         if is_verbose():

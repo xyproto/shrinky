@@ -274,7 +274,7 @@ g_template_header = Template("""#ifndef SHRINKY_H
 #include <stdlib.h>
 #endif
 [[INCLUDE_FREETYPE]][[INCLUDE_OPENGL]][[INCLUDE_PNG]][[INCLUDE_RAND]][[INCLUDE_SDL]][[INCLUDE_SNDFILE]]
-#if defined(SDL_INIT_EVERYTHING) && defined(__APPLE__)
+#if defined(SDL_INIT_VIDEO) && defined(__APPLE__)
 #define SHRINKY_MAIN SDL_main
 #else
 #define SHRINKY_MAIN main
@@ -447,7 +447,7 @@ g_template_include_rand = Template("""
 """)
 
 g_template_include_sdl = Template("""
-#include \"SDL.h\"
+#include <SDL3/SDL.h>
 """)
 
 g_template_include_sndfile = Template("""
@@ -992,19 +992,19 @@ def main():
     extra_compiler_flags = []
     extra_linker_flags = []
     include_directories = [PATH_VIDEOCORE + "/include", PATH_VIDEOCORE + "/include/interface/vcos/pthreads", PATH_VIDEOCORE + "/include/interface/vmcs_host/linux",
-                           "/usr/include/freetype2/", "/usr/include/SDL", "/usr/local/include", "/usr/local/include/freetype2/", "/usr/local/include/SDL"]
+                           "/usr/include/freetype2/", "/usr/include/SDL3", "/usr/local/include", "/usr/local/include/freetype2/", "/usr/local/include/SDL3"]
     library_directories = ["/lib", "/lib/x86_64-linux-gnu", PATH_VIDEOCORE + "/lib", "/usr/lib",
                            "/usr/lib/arm-linux-gnueabihf", "/usr/lib/gcc/arm-linux-gnueabihf/4.9/", "/usr/lib/x86_64-linux-gnu", "/usr/local/lib"]
     opengl_reason = None
     opengl_version = None
     program_name = os.path.basename(sys.argv[0])
-    sdl_version = 2
+    sdl_version = 3
 
     parser = argparse.ArgumentParser(usage="%s [args] <source file(s)> [-o output]" % (
         program_name), description="Size-optimized executable generator for *nix platforms.\nPreprocesses given source file(s) looking for specifically marked function calls, then generates a dynamic loader header file that can be used within these same source files to decrease executable size.\nOptionally also perform the actual compilation of a size-optimized binary after generating the header.", formatter_class=CustomHelpFormatter, add_help=False)
     parser.add_argument("--32", dest="m32", action="store_true",
                         help="Try to target 32-bit version of the architecture if on a 64-bit system.")
-    parser.add_argument("-a", "--abstraction-layer", choices=("sdl1", "sdl2"),
+    parser.add_argument("-a", "--abstraction-layer", choices=("sdl1", "sdl3"),
                         help="Specify abstraction layer to use instead of autodetecting.")
     parser.add_argument("-A", "--assembler", default=None,
                         help="Try to use given assembler executable as opposed to autodetect.")
@@ -1271,7 +1271,7 @@ def main():
         for ii in sorted(sortable_symbols):
             symbols += [ii[1]]
     # Some libraries cannot co-exist, but have some symbols with identical names.
-    symbols = replace_conflicting_library(symbols, "SDL", "SDL2")
+    symbols = replace_conflicting_library(symbols, "SDL", "SDL3")
     # Filter real symbols (as separate from implicit).
     real_symbols = list([x for x in symbols if not x.is_verbatim()])
     if is_verbose():
@@ -1293,7 +1293,7 @@ def main():
         subst["INCLUDE_PNG"] = g_template_include_png.format()
     if symbols_has_library(symbols, "vulkan"):
         subst["INCLUDE_VULKAN"] = g_template_include_vulkan.format()
-    if symbols_has_library(symbols, ("SDL", "SDL2")):
+    if symbols_has_library(symbols, ("SDL", "SDL3")):
         subst["INCLUDE_SDL"] = g_template_include_sdl.format()
     if symbols_has_library(symbols, "sndfile"):
         subst["INCLUDE_SNDFILE"] = g_template_include_sndfile.format()
@@ -1363,12 +1363,12 @@ def main():
     if not abstraction_layer:
         if symbols_has_library(symbols, "SDL"):
             abstraction_layer += ["sdl1"]
-        if symbols_has_library(symbols, "SDL2"):
-            abstraction_layer += ["sdl2"]
+        if symbols_has_library(symbols, "SDL3"):
+            abstraction_layer += ["sdl3"]
     if 1 < len(abstraction_layer):
         raise RuntimeError("conflicting abstraction layers detected: %s" % (str(abstraction_layer)))
-    if "sdl2" in abstraction_layer:
-        (sdl_stdout, sdl_stderr) = run_command(["sdl2-config", "--cflags"])
+    if "sdl3" in abstraction_layer:
+        (sdl_stdout, sdl_stderr) = run_command(["pkg-config", "--cflags", "sdl3"])
         compiler.add_extra_compiler_flags(sdl_stdout.split())
     elif "sdl1" in abstraction_layer:
         (sdl_stdout, sdl_stderr) = run_command(["sdl-config", "--cflags"])
