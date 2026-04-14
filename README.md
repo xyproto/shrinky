@@ -1,6 +1,6 @@
-# shrinky
+# Shrinky
 
-Minimal binary generator for 64-bit ELF files, for Arch Linux.
+Minimal binary generator for 64-bit ELF files, for Arch Linux. Also tested on Fedora.
 
 This is a fork of [dnload by Faemiyah](http://faemiyah.fi/demoscene/dnload).
 
