@@ -1565,5 +1565,5 @@ dnload r1 (2014-05-30)
 
 ### General info about this fork
 
-* Version: 1.0.1
+* Version: 1.0.2
 * License: BSD-3
