@@ -523,7 +523,7 @@ def compress_file(compression, pretty, src, dst):
     # #!bin/sh is needed when running zsh
     if "lzma" == compression:
         command = ["xz", "--format=lzma", "--lzma1=preset=9,lc=1,lp=0,nice=273,pb=0", "--stdout"]
-        header = "#!/bin/sh\nHOME=/tmp/i;%s $0|lzcat>~;chmod +x ~;~%s" % (str_tail, str_cleanup)
+        header = "#!/bin/sh\nHOME=/tmp/i;%s $0|xz -dFlzma>~;chmod +x ~;~%s" % (str_tail, str_cleanup)
     elif "raw" == compression:
         command = ["xz", "-9", "--extreme", "--format=raw", "--stdout"]
         header = "#!/bin/sh\nHOME=/tmp/i;%s $0|xzcat -F raw>~;chmod +x ~;~%s" % (str_tail, str_cleanup)

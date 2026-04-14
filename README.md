@@ -418,15 +418,15 @@ and better tricks. For example, using a trick from *ts/TDA*
 [\[ref27\]](#ref27){.citation}, redefining HOME allows using the tilde
 character for clever reduction:
 
-    HOME=/tmp/i;tail -n+2 $0|lzcat>~;chmod +x ~;~;rm ~;exit
+    HOME=/tmp/i;tail -n+2 $0|xz -dFlzma>~;chmod +x ~;~;rm ~;exit
 
-This unpack header has gone to 57 bytes (newline for tail is needed at
+This unpack header has gone to 62 bytes (newline for tail is needed at
 the end) from the 66 needed by Marq, but it\'s still unnecessarily large
 as it\'s trying to be nice. If we omit removing the extracted file and
 allow the compressed garble to flood the screen, we can do the same in
-44 bytes:
+49 bytes:
 
-    HOME=/tmp/i;sed 1d $0|lzcat>~;chmod +x ~;~
+    HOME=/tmp/i;sed 1d $0|xz -dFlzma>~;chmod +x ~;~
 
 One could assume that `xz` format would be more advantageous than the
 earlier lzma, but this seems not to be the case as lzma compression
