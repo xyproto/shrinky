@@ -1,7 +1,7 @@
 #!/bin/sh
 SHRINKY_MODULE_PATH=shrinky
 if [ -z $1 ]; then
-  echo 'Shrinky 1.0.2'
+  echo 'Shrinky 1.0.3'
   echo
   echo 'Provide the path to a C++ source file as the first argument.'
   echo
