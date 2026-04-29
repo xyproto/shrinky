@@ -15,7 +15,11 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         """Method override."""
         ret = []
         for ii in text.splitlines():
-            ret += [textwrap.fill(ii, width, initial_indent=indent, subsequent_indent=indent)]
+            ret += [
+                textwrap.fill(
+                    ii, width, initial_indent=indent, subsequent_indent=indent
+                )
+            ]
         return "\n\n".join(ret)
 
     def _split_lines(self, text, width):

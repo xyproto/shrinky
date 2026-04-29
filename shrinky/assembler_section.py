@@ -33,39 +33,39 @@ class AssemblerSection:
     def crunch(self):
         """Remove all offending content."""
         while True:
-            #lst = self.want_line(r'\s*\.file\s+(.*)')
+            # lst = self.want_line(r'\s*\.file\s+(.*)')
             # if lst:
             #  self.erase(lst[0])
             #  continue
-            #lst = self.want_line(r'\s*\.globl\s+(.*)')
+            # lst = self.want_line(r'\s*\.globl\s+(.*)')
             # if lst:
             #  self.erase(lst[0])
             #  continue
-            #lst = self.want_line(r'\s*\.ident\s+(.*)')
+            # lst = self.want_line(r'\s*\.ident\s+(.*)')
             # if lst:
             #  self.erase(lst[0])
             #  continue
-            #lst = self.want_line(r'\s*\.type\s+(.*)')
+            # lst = self.want_line(r'\s*\.type\s+(.*)')
             # if lst:
             #  self.erase(lst[0])
             #  continue
-            #lst = self.want_line(r'\s*\.size\s+(.*)')
+            # lst = self.want_line(r'\s*\.size\s+(.*)')
             # if lst:
             #  self.erase(lst[0])
             #  continue
-            lst = self.want_line(r'\s*\.section\s+(.*)')
+            lst = self.want_line(r"\s*\.section\s+(.*)")
             if lst:
                 self.erase(lst[0])
                 continue
-            lst = self.want_line(r'\s*\.(bss)\s+')
+            lst = self.want_line(r"\s*\.(bss)\s+")
             if lst:
                 self.erase(lst[0])
                 continue
-            lst = self.want_line(r'\s*\.(data)\s+')
+            lst = self.want_line(r"\s*\.(data)\s+")
             if lst:
                 self.erase(lst[0])
                 continue
-            lst = self.want_line(r'\s*\.(text)\s+')
+            lst = self.want_line(r"\s*\.(text)\s+")
             if lst:
                 self.erase(lst[0])
                 continue
@@ -81,14 +81,19 @@ class AssemblerSection:
         self.crunch_entry_push("_start")
         self.crunch_entry_push(ELFLING_UNCOMPRESSED)
         self.crunch_jump_pop(ELFLING_UNCOMPRESSED)
-        lst = self.want_line(r'\s*(int\s+\$0x3|syscall)\s+.*')
+        lst = self.want_line(r"\s*(int\s+\$0x3|syscall)\s+.*")
         if lst:
             ii = lst[0] + 1
             jj = ii
             while True:
-                if len(self.__content) <= jj or re.match(r'\s*\S+\:\s*', self.__content[jj]):
+                if len(self.__content) <= jj or re.match(
+                    r"\s*\S+\:\s*", self.__content[jj]
+                ):
                     if is_verbose():
-                        print("Erasing function footer after '%s': %i lines" % (lst[1], jj - ii))
+                        print(
+                            "Erasing function footer after '%s': %i lines"
+                            % (lst[1], jj - ii)
+                        )
                     self.erase(ii, jj)
                     break
                 jj += 1
@@ -105,7 +110,7 @@ class AssemblerSection:
         reinstated_lines = []
         while True:
             current_line = self.__content[jj]
-            match = re.match(r'\s*(push\w).*%(\w+)', current_line, re.IGNORECASE)
+            match = re.match(r"\s*(push\w).*%(\w+)", current_line, re.IGNORECASE)
             if match:
                 if is_stack_save_register(match.group(2)):
                     stack_save_decrement += get_push_size(match.group(1))
@@ -114,13 +119,15 @@ class AssemblerSection:
                 jj += 1
                 continue
             # Preserve comment lines as they are.
-            match = re.match(r'^\s*[#;].*', current_line, re.IGNORECASE)
+            match = re.match(r"^\s*[#;].*", current_line, re.IGNORECASE)
             if match:
                 reinstated_lines += [current_line]
                 jj += 1
                 continue
             # Saving stack pointer or sometimes initializing edx seem to be within pushing.
-            match = re.match(r'\s*mov\w\s+%\w+,\s*%(rbp|ebp|edx).*', current_line, re.IGNORECASE)
+            match = re.match(
+                r"\s*mov\w\s+%\w+,\s*%(rbp|ebp|edx).*", current_line, re.IGNORECASE
+            )
             if match:
                 if is_stack_save_register(match.group(1)):
                     stack_save_decrement = 0
@@ -132,18 +139,25 @@ class AssemblerSection:
                 reinstated_lines += [current_line]
                 jj += 1
                 continue
-            match = re.match(r'\s*sub.*\s+[^\d]*(\d+),\s*%(rsp|esp)', current_line, re.IGNORECASE)
+            match = re.match(
+                r"\s*sub.*\s+[^\d]*(\d+),\s*%(rsp|esp)", current_line, re.IGNORECASE
+            )
             if match:
-                total_decrement = int(match.group(1)) + stack_decrement + stack_save_decrement
+                total_decrement = (
+                    int(match.group(1)) + stack_decrement + stack_save_decrement
+                )
                 # _start is entered by the kernel with RSP 16-byte aligned, but the
                 # compiler assumes a call pushed a return address (RSP = 8 mod 16).
                 # Add 8 bytes to fix the alignment.
                 if op == "_start":
                     total_decrement += 8
-                self.__content[jj] = re.sub(r'\d+', str(total_decrement), current_line)
+                self.__content[jj] = re.sub(r"\d+", str(total_decrement), current_line)
             break
         if is_verbose():
-            print("Erasing function header from '%s': %i lines" % (op, jj - ii - len(reinstated_lines)))
+            print(
+                "Erasing function header from '%s': %i lines"
+                % (op, jj - ii - len(reinstated_lines))
+            )
         self.erase(ii, jj)
         self.__content[ii:ii] = reinstated_lines
 
@@ -152,29 +166,39 @@ class AssemblerSection:
         self.crunch_entry_push("_start")
         self.crunch_entry_push(ELFLING_UNCOMPRESSED)
         self.crunch_jump_pop(ELFLING_UNCOMPRESSED)
-        lst = self.want_line(r'\s*int\s+\$(0x3|0x80)\s+.*')
+        lst = self.want_line(r"\s*int\s+\$(0x3|0x80)\s+.*")
         if lst:
             ii = lst[0] + 1
             jj = ii
             while True:
-                if len(self.__content) <= jj or re.match(r'\s*\S+\:\s*', self.__content[jj]):
+                if len(self.__content) <= jj or re.match(
+                    r"\s*\S+\:\s*", self.__content[jj]
+                ):
                     if is_verbose():
-                        print("Erasing function footer after interrupt '%s': %i lines" % (lst[1], jj - ii))
+                        print(
+                            "Erasing function footer after interrupt '%s': %i lines"
+                            % (lst[1], jj - ii)
+                        )
                     self.erase(ii, jj)
                     break
                 jj += 1
 
     def crunch_jump_pop(self, op):
         """Crunch popping before a jump."""
-        lst = self.want_line(r'\s*(jmp\s+%s)\s+.*' % (op))
+        lst = self.want_line(r"\s*(jmp\s+%s)\s+.*" % (op))
         if not lst:
             return
         ii = lst[0]
         jj = ii - 1
         while True:
-            if (0 > jj) or not re.match(r'\s*(pop\S).*', self.__content[jj], re.IGNORECASE):
+            if (0 > jj) or not re.match(
+                r"\s*(pop\S).*", self.__content[jj], re.IGNORECASE
+            ):
                 if is_verbose():
-                    print("Erasing function footer before jump to '%s': %i lines" % (op, ii - jj - 1))
+                    print(
+                        "Erasing function footer before jump to '%s': %i lines"
+                        % (op, ii - jj - 1)
+                    )
                 self.erase(jj + 1, ii)
                 break
             jj -= 1
@@ -210,17 +234,17 @@ class AssemblerSection:
         """.comm extract."""
         idx = 0
         while True:
-            lst = self.want_line(r'\s*\.local\s+(\S+).*', idx)
+            lst = self.want_line(r"\s*\.local\s+(\S+).*", idx)
             if not lst:
                 break
             attempt = lst[0]
             name = lst[1]
             idx = attempt + 1
-            lst = self.want_line(r'\s*\.comm\s+%s\s*,(.*)' % (name), idx)
+            lst = self.want_line(r"\s*\.comm\s+%s\s*,(.*)" % (name), idx)
             if not lst:
                 continue
             size = lst[1]
-            match = re.match(r'\s*(\d+)\s*,\s*(\d+).*', size)
+            match = re.match(r"\s*(\d+)\s*,\s*(\d+).*", size)
             if match:
                 size = int(match.group(1))
             else:
@@ -233,7 +257,7 @@ class AssemblerSection:
         """Extract .bss objects signified with .object."""
         idx = 0
         while True:
-            lst = self.want_line(r'\s*.type\s+(\S+),\s+[@%]object', idx)
+            lst = self.want_line(r"\s*.type\s+(\S+),\s+[@%]object", idx)
             if not lst:
                 break
             first_line = lst[0]
@@ -241,16 +265,18 @@ class AssemblerSection:
             idx = first_line + 1
             if not lst:
                 continue
-            lst = self.want_line(r'\s*(%s)\:' % (name), lst[0] + 1, 2)
+            lst = self.want_line(r"\s*(%s)\:" % (name), lst[0] + 1, 2)
             if not lst:
                 continue
-            lst = self.want_line(r'\s*\.(?:space|zero)\s+(\d+)', lst[0] + 1, 2)
+            lst = self.want_line(r"\s*\.(?:space|zero)\s+(\d+)", lst[0] + 1, 2)
             if not lst:
                 continue
             last_line = lst[0] + 1
             bss_size = int(lst[1])
             # Check if there's an additional label to remove.
-            lst = self.want_line(r'\s*\.(globl|local)\s+%s\s*' % name, first_line - 1, 1)
+            lst = self.want_line(
+                r"\s*\.(globl|local)\s+%s\s*" % name, first_line - 1, 1
+            )
             if lst:
                 first_line = lst[0]
             # Erase and exit.
@@ -262,7 +288,7 @@ class AssemblerSection:
         """Gathers a list of .globl definitions."""
         ret = set()
         for ii in self.__content:
-            match = re.match(r'\s*\.globl\s+([\.\w]+).*', ii)
+            match = re.match(r"\s*\.globl\s+([\.\w]+).*", ii)
             if match:
                 ret = ret.union(set([match.group(1)]))
         return ret
@@ -271,12 +297,12 @@ class AssemblerSection:
         """Gathers all labels, if forbidden labels are specified, they are excluded."""
         ret = []
         for ii in self.__content:
-            match = re.match(r'((\.L|_ZL)[^:,\s\(]+)', ii)
+            match = re.match(r"((\.L|_ZL)[^:,\s\(]+)", ii)
             if match:
                 label = match.group(1)
                 if not (label in forbidden_labels):
                     ret += [label]
-            match = re.match(r'^([^\.:,\s\(]+):', ii)
+            match = re.match(r"^([^\.:,\s\(]+):", ii)
             if match:
                 label = match.group(1)
                 if not (label in forbidden_labels):
@@ -306,7 +332,7 @@ class AssemblerSection:
         adjustments = []
         for ii in range(len(self.__content)):
             line = self.__content[ii]
-            match = re.match(r'(\s*)\.align\s+(\d+).*', line)
+            match = re.match(r"(\s*)\.align\s+(\d+).*", line)
             if not match:
                 continue
             # Get actual align byte count.
@@ -319,7 +345,10 @@ class AssemblerSection:
             self.__content[ii] = "%s.balign %i\n" % (match.group(1), desired)
             adjustments += ["%i -> %i" % (align, desired)]
         if is_verbose() and adjustments:
-            print("Alignment adjustment(%s): %s" % (self.get_name(), ", ".join(adjustments)))
+            print(
+                "Alignment adjustment(%s): %s"
+                % (self.get_name(), ", ".join(adjustments))
+            )
 
     def replace_content(self, op):
         """Replace content of this section with content of given section."""
@@ -347,7 +376,7 @@ class AssemblerSection:
 
     def want_label(self, op):
         """Want a label from code."""
-        return self.want_line(r'\s*\S*(%s)\S*\:.*' % (op))
+        return self.want_line(r"\s*\S*(%s)\S*\:.*" % (op))
 
     def want_line(self, op, first=0, count=0x7FFFFFFF):
         """Want a line matching regex from object."""
@@ -360,6 +389,7 @@ class AssemblerSection:
     def __str__(self):
         """String representation."""
         return "AssemblerSection('%s', %i)" % (self.__name, len(self.__content))
+
 
 ########################################
 # Functions ############################
@@ -384,9 +414,9 @@ def get_align_bytes(op):
 def get_push_size(op):
     """Get push side increment for given instruction or register."""
     ins = op.lower()
-    if ins == 'pushq':
+    if ins == "pushq":
         return 8
-    elif ins == 'pushl':
+    elif ins == "pushl":
         return 4
     else:
         raise RuntimeError("push size not known for instruction '%s'" % (ins))
@@ -395,11 +425,11 @@ def get_push_size(op):
 def is_reinstate_line(op):
     """Tell if line is one of the legal lines to exist within entry push."""
     # Zeroing.
-    match = re.match(r'\s*xor.*\s+%(\S+)\s?,.*', op, re.IGNORECASE)
+    match = re.match(r"\s*xor.*\s+%(\S+)\s?,.*", op, re.IGNORECASE)
     if match:
         return True
     # Moving labels into registers.
-    match = re.match(r'\s*mov\w\s+\$[a-zA-Z_]\S*,\s+%\w+$', op, re.IGNORECASE)
+    match = re.match(r"\s*mov\w\s+\$[a-zA-Z_]\S*,\s+%\w+$", op, re.IGNORECASE)
     if match:
         return True
     return False
@@ -407,4 +437,4 @@ def is_reinstate_line(op):
 
 def is_stack_save_register(op):
     """Tell if given register is used for saving the stack."""
-    return op.lower() in ('rbp', 'ebp')
+    return op.lower() in ("rbp", "ebp")

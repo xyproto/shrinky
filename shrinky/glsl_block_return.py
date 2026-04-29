@@ -33,6 +33,7 @@ class GlslBlockReturn(GlslBlock):
         """String representation."""
         return "Return()"
 
+
 ########################################
 # Functions ############################
 ########################################

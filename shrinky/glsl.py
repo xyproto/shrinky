@@ -62,7 +62,9 @@ class Glsl:
             # Perform inlining passes.
             inlines = 0
             while True:
-                inline_pass_rv = self.inlinePass((max_inlines < 0) or (inlines < max_inlines))
+                inline_pass_rv = self.inlinePass(
+                    (max_inlines < 0) or (inlines < max_inlines)
+                )
                 # Last pass will return a listing of merged variable names.
                 if is_listing(inline_pass_rv):
                     merged = inline_pass_rv
@@ -87,7 +89,10 @@ class Glsl:
                     if is_listing(block):
                         inout_merges += [block[0]]
                 if inout_merges:
-                    print("GLSL inout connections found: %s" % (str(list(map(str, inout_merges)))))
+                    print(
+                        "GLSL inout connections found: %s"
+                        % (str(list(map(str, inout_merges))))
+                    )
             # Run rename passes until done.
             renames = 0
             for ii in merged:
@@ -245,7 +250,11 @@ class Glsl:
 
     def read(self, preprocessor, definition_ld, filename, varname, output_name=None):
         """Read source file."""
-        self.__sources += [glsl_read_source(preprocessor, definition_ld, filename, varname, output_name)]
+        self.__sources += [
+            glsl_read_source(
+                preprocessor, definition_ld, filename, varname, output_name
+            )
+        ]
 
     def renameBlock(self, block, target_name=None):
         """Rename block type."""
@@ -274,12 +283,14 @@ class Glsl:
         lst = block.getMemberAccesses()
         counted = self.countSorted()
         if len(counted) < len(lst):
-            raise RuntimeError("having more members than used letters should be impossible")
+            raise RuntimeError(
+                "having more members than used letters should be impossible"
+            )
         renames = len(lst)
         if 0 <= max_renames:
             renames = min(max_renames, renames)
         # Iterate over name types, one at a time.
-        for (name_list, letter) in zip(lst[:renames], counted[:renames]):
+        for name_list, letter in zip(lst[:renames], counted[:renames]):
             for name in name_list:
                 name.lock(letter)
         return renames
@@ -339,7 +350,10 @@ class Glsl:
             selected_for = rgba
             selected_against = "stpq: %i, xyzw: %i" % (stpq, xyzw)
         if is_verbose():
-            print("Selected GLSL swizzle: %s (%i vs. %s)" % (str(ret), selected_for, selected_against))
+            print(
+                "Selected GLSL swizzle: %s (%i vs. %s)"
+                % (str(ret), selected_for, selected_against)
+            )
         return ret
 
     def write(self):
@@ -350,6 +364,7 @@ class Glsl:
     def __str__(self):
         """String representation."""
         return "\n".join([str(x) for x in self.__sources])
+
 
 ########################################
 # Functions ############################
@@ -396,7 +411,10 @@ def collect_member_accesses(block, names):
     for kk in list(uses.keys()):
         name_list = uses[kk]
         if 1 >= len(name_list):
-            print("WARNING: member '%s' of '%s' not accessed" % (name_list[0].getName(), str(block)))
+            print(
+                "WARNING: member '%s' of '%s' not accessed"
+                % (name_list[0].getName(), str(block))
+            )
         typeid = name_list[0].getType()
         if not typeid:
             raise RuntimeError("name '%s' has no type" % (name_list[0]))
@@ -470,12 +488,12 @@ def inline_instances(parent, block, names):
 
 def is_glsl_block_global(op):
     """Tell if block is somehting of a global concern."""
-    return (is_glsl_block_inout(op) or is_glsl_block_uniform(op))
+    return is_glsl_block_inout(op) or is_glsl_block_uniform(op)
 
 
 def is_inline_name(op):
     """Tell if given name is viable for inlining."""
-    if re.match(r'^i_.*$', op.getName(), re.I):
+    if re.match(r"^i_.*$", op.getName(), re.I):
         return True
     return False
 
@@ -483,7 +501,10 @@ def is_inline_name(op):
 def merge_collected_name_lists(lst1, lst2):
     """Merge two collected names lists."""
     if is_listing(lst2[0]):
-        raise RuntimeError("expected non-listing as first element of collected name list 2, got: %s" % (str(lst2[0])))
+        raise RuntimeError(
+            "expected non-listing as first element of collected name list 2, got: %s"
+            % (str(lst2[0]))
+        )
     if is_listing(lst1[0]):
         ret = [lst1[0] + [lst2[0]]]
     else:
@@ -514,9 +535,15 @@ def merge_collected_names_inout(lst):
                     block = block[0]
                 if is_glsl_block_inout(block) and block.isMergableWith(ii[0]):
                     if ii[1] != ii[0].getName():
-                        raise RuntimeError("inout block inconsistency: '%s' vs. '%s'" % (ii[1], ii[0].getName()))
+                        raise RuntimeError(
+                            "inout block inconsistency: '%s' vs. '%s'"
+                            % (ii[1], ii[0].getName())
+                        )
                     if vv[1] != block.getName():
-                        raise RuntimeError("inout block inconsistency: '%s' vs. '%s'" % (vv[1], vv[0].getName()))
+                        raise RuntimeError(
+                            "inout block inconsistency: '%s' vs. '%s'"
+                            % (vv[1], vv[0].getName())
+                        )
                     ret[jj] = merge_collected_name_lists(vv, ii)
                     found = True
                     break
@@ -537,7 +564,9 @@ def merge_collected_names_function(lst):
                 block = vv[0]
                 if is_listing(block):
                     block = block[0]
-                if is_glsl_block_function(block) and (block.getName() == ii[0].getName()):
+                if is_glsl_block_function(block) and (
+                    block.getName() == ii[0].getName()
+                ):
                     ret[jj] = merge_collected_name_lists(vv, ii)
                     found = True
                     break
@@ -559,8 +588,10 @@ def merge_collected_names(lst):
             found_type = jj.getType()
             if found_type:
                 if typeid and (typeid != found_type):
-                    raise RuntimeError("conflicting types for '%s': %s" % (
-                        str(ii[0]), str([str(typeid), str(found_type)])))
+                    raise RuntimeError(
+                        "conflicting types for '%s': %s"
+                        % (str(ii[0]), str([str(typeid), str(found_type)]))
+                    )
                 typeid = found_type
         for jj in ii[1:]:
             jj.setType(typeid)

@@ -11,7 +11,9 @@ class GlslFloat:
     def __init__(self, integer1, integer2):
         """Constructor."""
         if integer2.getSign():
-            raise RuntimeError("invalid second integer for float: %s" % (integer2.getStr()))
+            raise RuntimeError(
+                "invalid second integer for float: %s" % (integer2.getStr())
+            )
         self.__integer1 = integer1
         self.__integer2 = integer2
         self.updateNumber()
@@ -19,7 +21,10 @@ class GlslFloat:
         self.__allow_integrify = False
         # Check.
         if float(self.format(False)) != self.__number:
-            raise RuntimeError("incorrect float parse: '%f' vs. '%s'" % (self.__number, self.format(False)))
+            raise RuntimeError(
+                "incorrect float parse: '%f' vs. '%s'"
+                % (self.__number, self.format(False))
+            )
 
     def format(self, force):
         """Return formatted output."""
@@ -31,7 +36,10 @@ class GlslFloat:
             return self.__sign + "." + self.__integer2.getStr().rstrip("0")
         if (self.__integer2.getInt() == 0) and self.__allow_integrify:
             return str(self.__integer1.getInt())
-        return "%s.%s" % (str(self.__integer1.getInt()), self.__integer2.getStr().rstrip("0"))
+        return "%s.%s" % (
+            str(self.__integer1.getInt()),
+            self.__integer2.getStr().rstrip("0"),
+        )
 
     def getFloat(self):
         """Accessor."""
@@ -60,11 +68,14 @@ class GlslFloat:
 
     def updateNumber(self):
         """Update the number value."""
-        self.__number = float(str(self.__integer1.getStr()) + "." + str(self.__integer2.getStr()))
+        self.__number = float(
+            str(self.__integer1.getStr()) + "." + str(self.__integer2.getStr())
+        )
 
     def __str__(self):
         """String representation."""
         return "GlslFloat('%s')" % (self.format(False))
+
 
 ########################################
 # Functions ############################

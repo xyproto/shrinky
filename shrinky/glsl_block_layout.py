@@ -26,6 +26,7 @@ class GlslBlockLayout(GlslBlock):
         """String representation."""
         return "Layout(%i)" % (self.__location.getInt())
 
+
 ########################################
 # Functions ############################
 ########################################
@@ -38,7 +39,9 @@ def glsl_parse_layout(source):
         return (None, source)
     lst = []
     while scope:
-        (location, assignment, index, intermediate) = extract_tokens(scope, ("?|location", "?=", "?u"))
+        (location, assignment, index, intermediate) = extract_tokens(
+            scope, ("?|location", "?=", "?u")
+        )
         if location and assignment and index:
             lst += [[location, assignment, index]]
             scope = intermediate
@@ -49,7 +52,9 @@ def glsl_parse_layout(source):
             lst += [[primitive]]
             scope = intermediate
             continue
-        (max_vertices, assignment, amount, intermediate) = extract_tokens(scope, ("?|max_vertices", "?=", "?u"))
+        (max_vertices, assignment, amount, intermediate) = extract_tokens(
+            scope, ("?|max_vertices", "?=", "?u")
+        )
         if max_vertices and assignment and amount:
             lst += [[max_vertices, assignment, amount]]
             scope = intermediate

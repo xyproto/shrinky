@@ -23,7 +23,10 @@ class PlatformVar:
         for ii in combinations:
             if ii in current_var:
                 return current_var[ii]
-        raise RuntimeError("current platform %s not supported for variable '%s'" % (str(combinations), self.__name))
+        raise RuntimeError(
+            "current platform %s not supported for variable '%s'"
+            % (str(combinations), self.__name)
+        )
 
     def deconstructable(self):
         """Tell if this platform value can be deconstructed."""
@@ -43,12 +46,15 @@ class PlatformVar:
             return "0x%x" % (ret)
         return ret
 
+
 ########################################
 # Globals ##############################
 ########################################
 
 
-(g_osname, g_osignore1, g_osignore2, g_osignore3, g_osarch, g_osignore4) = platform.uname()
+(g_osname, g_osignore1, g_osignore2, g_osignore3, g_osarch, g_osignore4) = (
+    platform.uname()
+)
 
 g_platform_mapping = {
     "amd64": "64-bit",
@@ -72,12 +78,27 @@ g_platform_variables = {
     "e_machine": {"amd64": 62, "arm32l": 40, "ia32": 3},
     "ei_class": {"32-bit": 1, "64-bit": 2},
     "ei_osabi": {"FreeBSD": 9, "Linux-arm32l": 0, "Linux": 3},
-    "entry": {"64-bit": 0x400000, "armv6l": 0x10000, "armv7l": 0x8000, "ia32": 0x2000000},  # ia32: 0x8048000
+    "entry": {
+        "64-bit": 0x400000,
+        "armv6l": 0x10000,
+        "armv7l": 0x8000,
+        "ia32": 0x2000000,
+    },  # ia32: 0x8048000
     "function_rand": {"default": None},
     "function_srand": {"default": None},
     "gl_library": {"default": "GL"},
-    "interp": {"FreeBSD": "\"/libexec/ld-elf.so.1\"", "Linux-arm32l": "\"/lib/ld-linux.so.3\"", "Linux-ia32": "\"/lib/ld-linux.so.2\"", "Linux-amd64": "\"/lib64/ld-linux-x86-64.so.2\""},
-    "march": {"amd64": "core2", "armv6l": "armv6t2", "armv7l": "armv7", "ia32": "pentium4"},
+    "interp": {
+        "FreeBSD": '"/libexec/ld-elf.so.1"',
+        "Linux-arm32l": '"/lib/ld-linux.so.3"',
+        "Linux-ia32": '"/lib/ld-linux.so.2"',
+        "Linux-amd64": '"/lib64/ld-linux-x86-64.so.2"',
+    },
+    "march": {
+        "amd64": "core2",
+        "armv6l": "armv6t2",
+        "armv7l": "armv7",
+        "ia32": "pentium4",
+    },
     "memory_page": {"32-bit": 0x1000, "64-bit": 0x200000},
     "mpreferred-stack-boundary": {"arm32l": 0, "ia32": 2, "64-bit": 4},
     "phdr_count": {"default": 3},
@@ -157,7 +178,9 @@ def replace_osarch(repl_osarch, reason):
     if g_osarch == repl_osarch:
         return
     if is_verbose():
-        print("%stargeting osarch '%s' instead of '%s'" % (reason, repl_osarch, g_osarch))
+        print(
+            "%stargeting osarch '%s' instead of '%s'" % (reason, repl_osarch, g_osarch)
+        )
     g_osarch = repl_osarch
 
 
@@ -167,12 +190,16 @@ def replace_osname(repl_osname, reason):
     if g_osname == repl_osname:
         return
     if is_verbose():
-        print("%stargeting osname '%s' instead of '%s'" % (reason, repl_osname, g_osname))
+        print(
+            "%stargeting osname '%s' instead of '%s'" % (reason, repl_osname, g_osname)
+        )
     g_osname = repl_osname
 
 
 def replace_platform_variable(name, op):
     """Destroy platform variable, replace with default."""
     if not name in g_platform_variables:
-        raise RuntimeError("trying to destroy nonexistent platform variable '%s'" % (name))
+        raise RuntimeError(
+            "trying to destroy nonexistent platform variable '%s'" % (name)
+        )
     g_platform_variables[name] = {"default": op}

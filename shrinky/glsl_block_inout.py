@@ -32,6 +32,7 @@ class GlslBlockInOut(GlslBlock):
         """String representation."""
         return "InOut()"
 
+
 ########################################
 # GlslBlockInOutStruct #################
 ########################################
@@ -57,7 +58,11 @@ class GlslBlockInOutStruct(GlslBlockInOut):
         """Return formatted output."""
         ret = self.formatBase(force)
         lst = "".join([x.format(force) for x in self.__members])
-        ret += (" %s{%s}%s" % (self.__type_name.format(force), lst, self.__name.format(force)))
+        ret += " %s{%s}%s" % (
+            self.__type_name.format(force),
+            lst,
+            self.__name.format(force),
+        )
         if self.__size:
             ret += "[%s]" % (self.__size.format(force))
         return ret + ";"
@@ -85,7 +90,7 @@ class GlslBlockInOutStruct(GlslBlockInOut):
             members2 = sorted(self.__members)
             if len(members1) != len(members2):
                 return False
-            for (ii, jj) in zip(members1, members2):
+            for ii, jj in zip(members1, members2):
                 if ii.getName() != jj.getName():
                     return False
             return True
@@ -98,6 +103,7 @@ class GlslBlockInOutStruct(GlslBlockInOut):
     def __str__(self):
         """String representation."""
         return "InOutStruct('%s')" % (self.__name.getName())
+
 
 ########################################
 # GlslBlockInOutTyped ##################
@@ -120,7 +126,9 @@ class GlslBlockInOutTyped(GlslBlockInOut):
     def format(self, force):
         """Return formatted output."""
         ret = self.formatBase(force)
-        return ret + (" %s %s;" % (self.__typeid.format(force), self.__name.format(force)))
+        return ret + (
+            " %s %s;" % (self.__typeid.format(force), self.__name.format(force))
+        )
 
     def getName(self):
         """Accessor."""
@@ -132,13 +140,21 @@ class GlslBlockInOutTyped(GlslBlockInOut):
 
     def isMergableWith(self, op):
         """Tell if this inout block can be merged with given block."""
-        if is_glsl_block_inout_typed(op) and (op.getName() == self.__name) and (op.getType() == self.__typeid):
+        if (
+            is_glsl_block_inout_typed(op)
+            and (op.getName() == self.__name)
+            and (op.getType() == self.__typeid)
+        ):
             return True
         return False
 
     def __str__(self):
         """String representation."""
-        return "InOutTyped('%s %s')" % (self.__typeid.format(False), self.__name.getName())
+        return "InOutTyped('%s %s')" % (
+            self.__typeid.format(False),
+            self.__name.getName(),
+        )
+
 
 ########################################
 # Functions ############################
@@ -155,7 +171,9 @@ def glsl_parse_inout(source):
     if inout:
         return (GlslBlockInOut(layout, inout), remaining)
     # Scoped version first.
-    (inout, type_name, scope, name, intermediate) = extract_tokens(content, ("?o", "?n", "?{", "?n"))
+    (inout, type_name, scope, name, intermediate) = extract_tokens(
+        content, ("?o", "?n", "?{", "?n")
+    )
     if inout and type_name and scope and name:
         members = glsl_parse_member_list(scope)
         if not members[0]:
@@ -165,11 +183,17 @@ def glsl_parse_inout(source):
         # May have an array.
         (size, remaining) = extract_tokens(intermediate, ("[", "?u", "]", ";"))
         if size:
-            return (GlslBlockInOutStruct(layout, inout, type_name, members, name, size), remaining)
+            return (
+                GlslBlockInOutStruct(layout, inout, type_name, members, name, size),
+                remaining,
+            )
         # Did not have an array.
         (terminator, remaining) = extract_tokens(intermediate, "?|;")
         if terminator:
-            return (GlslBlockInOutStruct(layout, inout, type_name, members, name), remaining)
+            return (
+                GlslBlockInOutStruct(layout, inout, type_name, members, name),
+                remaining,
+            )
     # Regular inout.
     (inout, typeid, name, remaining) = extract_tokens(content, ("?o", "?t", "?n", ";"))
     if not inout or not typeid or not name:

@@ -48,7 +48,9 @@ class GlslBlockAssignment(GlslBlock):
     def getTerminator(self):
         """Accessor."""
         if len(self._children) != 1:
-            raise RuntimeError("GlslBlockAssignment::getTerminator(), child count not 1")
+            raise RuntimeError(
+                "GlslBlockAssignment::getTerminator(), child count not 1"
+            )
         return self._children[0].getTerminator()
 
     def replaceTerminator(self, op):
@@ -58,6 +60,7 @@ class GlslBlockAssignment(GlslBlock):
     def __str__(self):
         """String representation."""
         return "Assignment('%s')" % (self.__name.getName())
+
 
 ########################################
 # Functions ############################

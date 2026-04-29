@@ -33,7 +33,9 @@ class GlslBlockScope(GlslBlock):
         self.__allow_squash = False
         # Check for degenerate scope.
         if (1 == len(lst)) and is_glsl_block_declaration(lst[0]):
-            raise RuntimeError("scope with only block '%s' is degenerate" % (lst[0].format(True)))
+            raise RuntimeError(
+                "scope with only block '%s' is degenerate" % (lst[0].format(True))
+            )
         # Check for empty scope (likely an error).
         if 0 >= len(lst):
             if is_verbose():
@@ -53,7 +55,11 @@ class GlslBlockScope(GlslBlock):
         for ii in range(1, len(self._children)):
             aa = self._children[ii - 1]
             bb = self._children[ii]
-            aa_mergable = is_glsl_block_assignment(aa) or is_glsl_block_call(aa) or is_glsl_block_unary(aa)
+            aa_mergable = (
+                is_glsl_block_assignment(aa)
+                or is_glsl_block_call(aa)
+                or is_glsl_block_unary(aa)
+            )
             bb_mergable = is_glsl_block_return(bb) and (not bb.isEmptyReturn())
             if aa_mergable and bb_mergable:
                 aa.replaceTerminator(",")
@@ -64,8 +70,16 @@ class GlslBlockScope(GlslBlock):
         for ii in range(1, len(self._children)):
             aa = self._children[ii - 1]
             bb = self._children[ii]
-            aa_mergable = is_glsl_block_assignment(aa) or is_glsl_block_call(aa) or is_glsl_block_unary(aa)
-            bb_mergable = is_glsl_block_assignment(bb) or is_glsl_block_call(bb) or is_glsl_block_unary(bb)
+            aa_mergable = (
+                is_glsl_block_assignment(aa)
+                or is_glsl_block_call(aa)
+                or is_glsl_block_unary(aa)
+            )
+            bb_mergable = (
+                is_glsl_block_assignment(bb)
+                or is_glsl_block_call(bb)
+                or is_glsl_block_unary(bb)
+            )
             # Assignment can start a group.
             if aa_mergable and bb_mergable:
                 vv = GlslBlockGroup(bb)
@@ -109,6 +123,7 @@ class GlslBlockScope(GlslBlock):
         """String representation."""
         return "Scope(%u)" % (len(self._children))
 
+
 ########################################
 # Functions ############################
 ########################################
@@ -117,7 +132,11 @@ class GlslBlockScope(GlslBlock):
 def glsl_parse_content(source):
     """Parse generic content."""
     # Nested scopes without extra content make no sense.
-    if 2 <= len(source) and ("{" == source[0].format(False)) and ("}" == source[-1].format(False)):
+    if (
+        2 <= len(source)
+        and ("{" == source[0].format(False))
+        and ("}" == source[-1].format(False))
+    ):
         return glsl_parse_content(source[1:-1])
     # Loop over content.
     ret = []

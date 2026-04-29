@@ -31,13 +31,21 @@ class Compiler(Linker):
                 self.add_extra_compiler_flags(ii)
             return
         if not (op in self._compiler_flags_extra):
-            if (not (op in self._include_directories)) and (not (op in self._definitions)):
+            if (not (op in self._include_directories)) and (
+                not (op in self._definitions)
+            ):
                 self._compiler_flags_extra += [op]
 
     def compile_asm(self, src, dst, whole_program=False):
         """Compile a file into assembler source."""
-        cmd = [self.get_command(), "-S", src, "-o", dst] + self.__standard + self.__compiler_flags + \
-            self._compiler_flags_extra + self._definitions + self._include_directories
+        cmd = (
+            [self.get_command(), "-S", src, "-o", dst]
+            + self.__standard
+            + self.__compiler_flags
+            + self._compiler_flags_extra
+            + self._definitions
+            + self._include_directories
+        )
         if whole_program:
             cmd += self.__compiler_flags_whole_program
         (so, se) = run_command(cmd)
@@ -46,8 +54,17 @@ class Compiler(Linker):
 
     def compile_and_link(self, src, dst):
         """Compile and link a file directly."""
-        cmd = [self.get_command(), src, "-o", dst] + self.__standard + self.__compiler_flags + self._compiler_flags_extra + self._definitions + \
-            self._include_directories + self.get_linker_flags() + self.get_library_directory_list() + self.get_library_list()
+        cmd = (
+            [self.get_command(), src, "-o", dst]
+            + self.__standard
+            + self.__compiler_flags
+            + self._compiler_flags_extra
+            + self._definitions
+            + self._include_directories
+            + self.get_linker_flags()
+            + self.get_library_directory_list()
+            + self.get_library_list()
+        )
         (so, se) = run_command(cmd)
         if 0 < len(se) and is_verbose():
             print(se)
@@ -55,23 +72,60 @@ class Compiler(Linker):
     def generate_compiler_flags(self):
         """Generate compiler flags."""
         self.__compiler_flags = []
-        if self.command_basename_startswith("g++") or self.command_basename_startswith("gcc"):
-            self.__compiler_flags += ["-Os", "-ffast-math", "-fno-asynchronous-unwind-tables", "-fno-enforce-eh-specs", "-fno-exceptions", "-fno-implicit-templates", "-fno-rtti", "-fno-stack-protector", "-fno-threadsafe-statics",
-                                      "-fno-use-cxa-atexit", "-fno-use-cxa-get-exception-ptr", "-fnothrow-opt", "-fomit-frame-pointer", "-funsafe-math-optimizations", "-fvisibility=hidden", "-march=%s" % (str(PlatformVar("march"))), "-Wall"]
+        if self.command_basename_startswith("g++") or self.command_basename_startswith(
+            "gcc"
+        ):
+            self.__compiler_flags += [
+                "-Os",
+                "-ffast-math",
+                "-fno-asynchronous-unwind-tables",
+                "-fno-enforce-eh-specs",
+                "-fno-exceptions",
+                "-fno-implicit-templates",
+                "-fno-rtti",
+                "-fno-stack-protector",
+                "-fno-threadsafe-statics",
+                "-fno-use-cxa-atexit",
+                "-fno-use-cxa-get-exception-ptr",
+                "-fnothrow-opt",
+                "-fomit-frame-pointer",
+                "-funsafe-math-optimizations",
+                "-fvisibility=hidden",
+                "-march=%s" % (str(PlatformVar("march"))),
+                "-Wall",
+            ]
             self.__compiler_flags_whole_program += ["-fwhole-program"]
             # Some flags are platform-specific.
             stack_boundary = int(PlatformVar("mpreferred-stack-boundary"))
             if 0 < stack_boundary:
-                self.__compiler_flags += ["-mpreferred-stack-boundary=%i" % (stack_boundary)]
+                self.__compiler_flags += [
+                    "-mpreferred-stack-boundary=%i" % (stack_boundary)
+                ]
         elif self.command_basename_startswith("clang"):
-            self.__compiler_flags += ["-Os", "-ffast-math", "-fno-asynchronous-unwind-tables", "-fno-exceptions", "-fno-rtti", "-fno-threadsafe-statics",
-                                      "-fomit-frame-pointer", "-funsafe-math-optimizations", "-fvisibility=hidden", "-march=%s" % (str(PlatformVar("march"))), "-Wall"]
+            self.__compiler_flags += [
+                "-Os",
+                "-ffast-math",
+                "-fno-asynchronous-unwind-tables",
+                "-fno-exceptions",
+                "-fno-rtti",
+                "-fno-threadsafe-statics",
+                "-fomit-frame-pointer",
+                "-funsafe-math-optimizations",
+                "-fvisibility=hidden",
+                "-march=%s" % (str(PlatformVar("march"))),
+                "-Wall",
+            ]
         else:
-            raise RuntimeError("compilation not supported with compiler '%s'" % (self.get_command_basename()))
+            raise RuntimeError(
+                "compilation not supported with compiler '%s'"
+                % (self.get_command_basename())
+            )
 
     def generate_standard(self):
         """Generate C++ standard string."""
-        if self.command_basename_startswith("g++") or self.command_basename_startswith("gcc"):
+        if self.command_basename_startswith("g++") or self.command_basename_startswith(
+            "gcc"
+        ):
             # TODO: For older g++ versions: -std=gnu11 ?
             self.__standard = ["-std=c++17"]
         elif self.command_basename_startswith("clang"):

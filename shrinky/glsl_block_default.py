@@ -27,6 +27,7 @@ class GlslBlockDefault(GlslBlock):
         """String representation."""
         return "Default(%i)" % (len(self.__content))
 
+
 ########################################
 # Functions ############################
 ########################################

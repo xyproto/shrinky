@@ -51,8 +51,13 @@ class AssemblerSegment:
     def add_dt_needed(self, op):
         """Add requirement to given library."""
         d_tag = AssemblerVariable(("d_tag, DT_NEEDED = 1", PlatformVar("addr"), 1))
-        d_un = AssemblerVariable(("d_un, library name offset in strtab",
-                                  PlatformVar("addr"), "strtab_%s - strtab" % labelify(op)))
+        d_un = AssemblerVariable(
+            (
+                "d_un, library name offset in strtab",
+                PlatformVar("addr"),
+                "strtab_%s - strtab" % labelify(op),
+            )
+        )
         self.__data[0:0] = [d_tag, d_un]
         self.refresh_name_label()
 
@@ -77,7 +82,9 @@ class AssemblerSegment:
 
     def add_strtab(self, op):
         """Add a library name."""
-        libname = AssemblerVariable(("symbol name string", 1, "\"%s\"" % op), labelify(op))
+        libname = AssemblerVariable(
+            ("symbol name string", 1, '"%s"' % op), labelify(op)
+        )
         terminator = AssemblerVariable(("string terminating zero", 1, 0))
         self.__data[1:1] = [libname, terminator]
         self.refresh_name_end_label()
@@ -132,7 +139,7 @@ class AssemblerSegment:
         for ii in range(len(self.__data)):
             op = self.__data[-ii - 1].deconstruct()
             if not op:
-                return (self.__data[:len(self.__data) - ii], ret)
+                return (self.__data[: len(self.__data) - ii], ret)
             ret = op + ret
         return ([], ret)
 
@@ -163,7 +170,10 @@ class AssemblerSegment:
         if 0 >= highest_mergable:
             return False
         if is_verbose():
-            print("Merging headers %s and %s at %i bytes." % (self.__name, op.__name, highest_mergable))
+            print(
+                "Merging headers %s and %s at %i bytes."
+                % (self.__name, op.__name, highest_mergable)
+            )
         for ii in range(highest_mergable):
             bytestream_src[-highest_mergable + ii].merge(bytestream_dst[ii])
         bytestream_dst[0:highest_mergable] = []

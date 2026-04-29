@@ -18,16 +18,13 @@ class GlslInOut:
         """String representation."""
         return "GlslInOut('%s')" % (self.__inout)
 
+
 ########################################
 # Globals ##############################
 ########################################
 
 
-g_inout = ("attribute",
-           "in",
-           "inout",
-           "out",
-           "varying")
+g_inout = ("attribute", "in", "inout", "out", "varying")
 
 ########################################
 # Functions ############################

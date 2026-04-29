@@ -49,12 +49,18 @@ class GlslBlockSource(GlslBlock):
     def detectType(self):
         """Try to detect type from filename."""
         self.__type = None
-        stub = r'.*[._\-\s]%s[._\-\s].*'
-        if re.match(stub % ("frag"), self.__filename, re.I) or re.match(stub % ("fragment"), self.__filename, re.I):
+        stub = r".*[._\-\s]%s[._\-\s].*"
+        if re.match(stub % ("frag"), self.__filename, re.I) or re.match(
+            stub % ("fragment"), self.__filename, re.I
+        ):
             self.__type = "fragment"
-        elif re.match(stub % ("geom"), self.__filename, re.I) or re.match(stub % ("geometry"), self.__filename, re.I):
+        elif re.match(stub % ("geom"), self.__filename, re.I) or re.match(
+            stub % ("geometry"), self.__filename, re.I
+        ):
             self.__type = "geometry"
-        elif re.match(stub % ("vert"), self.__filename, re.I) or re.match(stub % ("vertex"), self.__filename, re.I):
+        elif re.match(stub % ("vert"), self.__filename, re.I) or re.match(
+            stub % ("vertex"), self.__filename, re.I
+        ):
             self.__type = "vertex"
         if is_verbose():
             output_message = "Shader file '%s' type" % (self.__filename)
@@ -70,15 +76,19 @@ class GlslBlockSource(GlslBlock):
     def generateHeaderOutput(self):
         """Generate output to be written into a file."""
         ret = self.format(True)
-        ret = "\n".join(["\"%s\"" % (x) for x in glsl_cstr_readable(ret)])
-        subst = {"DEFINITION_LD": self.__definition_ld, "FILE_NAME": os.path.basename(
-            self.__filename), "SOURCE": ret, "VARIABLE_NAME": self.__variable_name}
+        ret = "\n".join(['"%s"' % (x) for x in glsl_cstr_readable(ret)])
+        subst = {
+            "DEFINITION_LD": self.__definition_ld,
+            "FILE_NAME": os.path.basename(self.__filename),
+            "SOURCE": ret,
+            "VARIABLE_NAME": self.__variable_name,
+        }
         return g_template_glsl_header.format(subst)
 
     def generatePrintOutput(self):
         """Generate output to be written to output."""
         ret = self.format(True)
-        ret = "\n".join(["\"%s\"" % (x) for x in glsl_cstr_readable(ret)])
+        ret = "\n".join(['"%s"' % (x) for x in glsl_cstr_readable(ret)])
         subst = {"SOURCE": ret, "VARIABLE_NAME": self.__variable_name}
         return g_template_glsl_print.format(subst)
 
@@ -133,14 +143,20 @@ class GlslBlockSource(GlslBlock):
         """Write compressed output."""
         fd = open(self.__output_name, "w")
         if not fd:
-            raise RuntimeError("could not write GLSL header '%s'" % (self.__output_name))
+            raise RuntimeError(
+                "could not write GLSL header '%s'" % (self.__output_name)
+            )
         fd.write(self.generateHeaderOutput())
         fd.close()
         if is_verbose():
-            print("Wrote GLSL header: '%s' => '%s'" % (self.__variable_name, self.__output_name))
+            print(
+                "Wrote GLSL header: '%s' => '%s'"
+                % (self.__variable_name, self.__output_name)
+            )
 
     def __str__(self):
         return "Source('%s' => '%s')" % (self.__output_name, self.__variable_name)
+
 
 ########################################
 # Functions ############################

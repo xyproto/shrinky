@@ -55,9 +55,14 @@ class GlslBlock:
             return
         for ii in lst:
             if not is_glsl_block(ii):
-                raise RuntimeError("element '%s' to be added is not of type GlslBlock" % (str(ii)))
+                raise RuntimeError(
+                    "element '%s' to be added is not of type GlslBlock" % (str(ii))
+                )
             if ii.getParent():
-                raise RuntimeError("block '%s' to be added already has parent '%s'" % (str(ii), str(ii.getParent())))
+                raise RuntimeError(
+                    "block '%s' to be added already has parent '%s'"
+                    % (str(ii), str(ii.getParent()))
+                )
             if prepend:
                 self._children = [ii] + self._children
             else:
@@ -221,7 +226,7 @@ class GlslBlock:
 
     def hasChild(self, op):
         """Tell if list of children contains given child."""
-        return (op in self._children)
+        return op in self._children
 
     def hasDeclaredName(self, op):
         """Tell if this declares given name."""
@@ -263,7 +268,9 @@ class GlslBlock:
     def replaceChild(self, index, child):
         """Replace child at given index with another."""
         if self._children[index] == child:
-            raise RuntimeError("trying to replace child '%s' with itself" % (str(child)))
+            raise RuntimeError(
+                "trying to replace child '%s' with itself" % (str(child))
+            )
         self._children[index].setParent(None)
         self._children[index] = child
         child.setParent(self)
@@ -281,12 +288,21 @@ class GlslBlock:
             if typeid:
                 if is_glsl_type(typeid):
                     if (not typeid.isVectorType()) and (ii.getSwizzleLength() == 1):
-                        print("WARNING: redundant or invalid access %s on type %s" % (str(ii), str(typeid)))
+                        print(
+                            "WARNING: redundant or invalid access %s on type %s"
+                            % (str(ii), str(typeid))
+                        )
                     ii.selectSwizzle(op)
                 else:
-                    print("WARNING: access %s has invalid source type %s" % (str(ii), str(typeid)))
+                    print(
+                        "WARNING: access %s has invalid source type %s"
+                        % (str(ii), str(typeid))
+                    )
             else:
-                print("WARNING: source %s of access %s has no type" % (str(ii.getSource()), str(ii)))
+                print(
+                    "WARNING: source %s of access %s has no type"
+                    % (str(ii.getSource()), str(ii))
+                )
         # Recursively descend to children.
         for ii in self._children:
             ii.selectSwizzle(op)
@@ -300,6 +316,7 @@ class GlslBlock:
         if op and (not op.hasChild(self)):
             raise RuntimeError("GlslBlock::setParent() hierarchy inconsistency")
         self.__parent = op
+
 
 ########################################
 # Functions ############################
@@ -319,7 +336,7 @@ def check_token(token, req):
     # Tokens are converted to strings for comparison.
     if isinstance(token, str) and (token == req):
         return True
-    return (token.format(False) == req)
+    return token.format(False) == req
 
 
 def extract_scope(tokens, opener):
@@ -333,7 +350,7 @@ def extract_scope(tokens, opener):
         if is_glsl_paren(elem):
             paren_count = opener.update(elem, paren_count)
             if 0 >= paren_count:
-                return (ret, tokens[ii + 1:])
+                return (ret, tokens[ii + 1 :])
         ret += [elem]
     # Did not find closing scope element.
     return (None, tokens)
@@ -510,7 +527,7 @@ def tokenize_split(source):
         for ii in array:
             ret += tokenize_split(ii)
         return ret
-    array = re.split(r'([\(\)\[\]\{\}\+\-\*\/%\|&!\.,;:<>\=])', source, 1)
+    array = re.split(r"([\(\)\[\]\{\}\+\-\*\/%\|&!\.,;:<>\=])", source, 1)
     if 3 > len(array):
         return [source]
     return list([x for x in array[:2] if x]) + tokenize_split(array[2])

@@ -27,6 +27,7 @@ class AssemblerSectionAlignment(AssemblerSection):
             self.add_content(assembler.format_align(self.__alignment))
         self.add_content(assembler.format_label(self.__post_label))
 
+
 ########################################
 # Functions ############################
 ########################################

@@ -29,7 +29,7 @@ class GlslBlockMember(GlslBlock):
 
     def __eq__(self, other):
         """Equals operator."""
-        return (self.format(False) == other.format(False))
+        return self.format(False) == other.format(False)
 
     def __ne__(self, other):
         """Not equals operator."""
@@ -37,11 +37,12 @@ class GlslBlockMember(GlslBlock):
 
     def __lt__(self, other):
         """Less than operator."""
-        return (self.format(False) < other.format(False))
+        return self.format(False) < other.format(False)
 
     def __str__(self):
         """String representation."""
         return "Member('%s')" % (self.__name)
+
 
 ########################################
 # Functions ############################
@@ -68,7 +69,9 @@ def glsl_parse_member_list(source):
     while content:
         (member, remaining) = glsl_parse_member(content)
         if not member:
-            raise RuntimeError("error parsing members: %s" % (str(list(map(str, content)))))
+            raise RuntimeError(
+                "error parsing members: %s" % (str(list(map(str, content))))
+            )
         ret += [member]
         content = remaining
     return ret

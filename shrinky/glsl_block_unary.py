@@ -31,6 +31,7 @@ class GlslBlockUnary(GlslBlock):
         """String representation."""
         return "Unary()"
 
+
 ########################################
 # Globals ##############################
 ########################################

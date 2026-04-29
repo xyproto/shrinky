@@ -24,7 +24,10 @@ class GlslBlockDeclaration(GlslBlock):
 
     def format(self, force):
         """Return formatted output."""
-        return "%s %s" % (self.__typeid.format(force), "".join([x.format(force) for x in self._children]))
+        return "%s %s" % (
+            self.__typeid.format(force),
+            "".join([x.format(force) for x in self._children]),
+        )
 
     def collapse(self, other, mode):
         """Collapse another declaration."""
@@ -54,7 +57,10 @@ class GlslBlockDeclaration(GlslBlock):
     def getStatement(self):
         """Access statement, only meaningful for single-assignment declaration."""
         if 1 < len(self._children):
-            raise RuntimeError("trying to access statement from a non-single assignment '%s'" % (str(self)))
+            raise RuntimeError(
+                "trying to access statement from a non-single assignment '%s'"
+                % (str(self))
+            )
         return self._children[0].getStatement()
 
     def getType(self):
@@ -64,6 +70,7 @@ class GlslBlockDeclaration(GlslBlock):
     def __str__(self):
         """String representation."""
         return "Declaration('%s')" % (self.__typeid.format(False))
+
 
 ########################################
 # Functions ############################

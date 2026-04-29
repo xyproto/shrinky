@@ -85,7 +85,7 @@ class Symbol:
 
     def is_verbatim(self):
         """Tell if this symbol should never be scoured but instead used verbatim."""
-        return (None == self.__rename)
+        return None == self.__rename
 
     def set_library(self, lib):
         """Replace library with given library."""
@@ -102,6 +102,7 @@ class Symbol:
     def __str__(self):
         """String representation."""
         return self.__name
+
 
 ########################################
 # Globals ##############################
@@ -414,18 +415,21 @@ def generate_loader_dlfcn(symbols, linker):
         symbol_lib = ii.get_library().get_name()
         if current_lib != symbol_lib:
             if current_lib:
-                dlfcn_string += "\"\\0%s\\0\"\n" % (ii.get_library_name(linker))
+                dlfcn_string += '"\\0%s\\0"\n' % (ii.get_library_name(linker))
             else:
-                dlfcn_string += "\"%s\\0\"\n" % (ii.get_library_name(linker))
+                dlfcn_string += '"%s\\0"\n' % (ii.get_library_name(linker))
             current_lib = symbol_lib
-        dlfcn_string += "\"%s\\0\"\n" % (ii)
-    subst = {"DLFCN_STRING": dlfcn_string + "\"\\0\""}
+        dlfcn_string += '"%s\\0"\n' % (ii)
+    subst = {"DLFCN_STRING": dlfcn_string + '"\\0"'}
     return g_template_loader_dlfcn.format(subst)
 
 
 def generate_loader_hash(symbols):
     """Generate import by hash loader code."""
-    subst = {"BASE_ADDRESS": str(PlatformVar("entry")), "SYMBOL_COUNT": str(len(symbols))}
+    subst = {
+        "BASE_ADDRESS": str(PlatformVar("entry")),
+        "SYMBOL_COUNT": str(len(symbols)),
+    }
     return g_template_loader_hash.format(subst)
 
 

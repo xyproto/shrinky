@@ -17,12 +17,15 @@ class GlslBlockPerVertex(GlslBlock):
 
     def format(self, force):
         """Return formatted output."""
-        lst = "".join(["%s %s;" % (x[0].format(force), x[1].format(force)) for x in self.__scope])
+        lst = "".join(
+            ["%s %s;" % (x[0].format(force), x[1].format(force)) for x in self.__scope]
+        )
         return "%s gl_PerVertex{%s};" % (self.__inout.format(force), lst)
 
     def __str__(self):
         """String representation."""
         return "Pervertex(%i)" % (len(self.__scope))
+
 
 ########################################
 # Functions ############################
@@ -31,7 +34,9 @@ class GlslBlockPerVertex(GlslBlock):
 
 def glsl_parse_pervertex(source):
     """Parse inout block."""
-    (inout, scope, remaining) = extract_tokens(source, ("?o", "gl_PerVertex", "?{", ";"))
+    (inout, scope, remaining) = extract_tokens(
+        source, ("?o", "gl_PerVertex", "?{", ";")
+    )
     if (not inout) or (not scope):
         return (None, source)
     # Split scope into elements.

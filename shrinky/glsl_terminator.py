@@ -32,6 +32,7 @@ class GlslTerminator:
         """String representation."""
         return "GlslTerminator('%s')" % (self.__terminator)
 
+
 ########################################
 # Functions ############################
 ########################################

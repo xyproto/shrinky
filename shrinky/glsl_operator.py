@@ -36,7 +36,10 @@ class GlslOperator:
         if self.__operator in ("++", "--", "!"):
             return ret
         ret += 1
-        if self.__operator in ("*", "/",):
+        if self.__operator in (
+            "*",
+            "/",
+        ):
             return ret
         ret += 1
         if self.__operator in ("%",):
@@ -128,7 +131,10 @@ class GlslOperator:
     def __lt__(self, other):
         """Less than operator."""
         if not is_glsl_operator(other):
-            raise RuntimeError("comparison against non-operator: '%s' vs. '%s'" % (str(self), str(other)))
+            raise RuntimeError(
+                "comparison against non-operator: '%s' vs. '%s'"
+                % (str(self), str(other))
+            )
         return self.getPrecedence() < other.getPrecedence()
 
     def __eq__(self, other):
@@ -144,6 +150,7 @@ class GlslOperator:
     def __str__(self):
         """String representation."""
         return "GlslOperator('%s')" % (self.__operator)
+
 
 ########################################
 # Globals ##############################

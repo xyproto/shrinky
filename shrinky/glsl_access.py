@@ -102,7 +102,9 @@ class GlslAccess:
     def setAccess(self, op):
         """Set given element as accessing this."""
         if self.__access:
-            raise RuntimeError("'%s' already has access '%s'" % (str(self), str(self.__access)))
+            raise RuntimeError(
+                "'%s' already has access '%s'" % (str(self), str(self.__access))
+            )
         self.__access = op
 
     def setSource(self, lst):
@@ -113,10 +115,16 @@ class GlslAccess:
             vv = lst[ii]
             if is_glsl_paren(vv):
                 if vv.isCurlyBrace():
-                    raise RuntimeError("curly brace found while looking for source of member")
+                    raise RuntimeError(
+                        "curly brace found while looking for source of member"
+                    )
                 paren_count = vv.updateParen(paren_count)
                 bracket_count = vv.updateBracket(bracket_count)
-            if (is_glsl_name(vv) or is_glsl_access(vv)) and (0 == bracket_count) and (0 == paren_count):
+            if (
+                (is_glsl_name(vv) or is_glsl_access(vv))
+                and (0 == bracket_count)
+                and (0 == paren_count)
+            ):
                 self.__source = vv
                 vv.setAccess(self)
                 return
@@ -125,6 +133,7 @@ class GlslAccess:
     def __str__(self):
         """String representation."""
         return "GlslAccess('%s')" % (self.__name.getName())
+
 
 ########################################
 # Functions ############################

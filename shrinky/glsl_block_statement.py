@@ -45,8 +45,10 @@ class GlslBlockStatement(GlslBlock):
 
     def replaceTerminator(self, op):
         """Replace terminator with given operator."""
-        if not (op in (',', ';')):
-            raise RuntimeError("invalid replacement terminator for GlslBlockStatement: '%s'" % (op))
+        if not (op in (",", ";")):
+            raise RuntimeError(
+                "invalid replacement terminator for GlslBlockStatement: '%s'" % (op)
+            )
         self.__terminator = op
 
     def replaceUsedNameExact(self, name, tokens):
@@ -68,7 +70,9 @@ class GlslBlockStatement(GlslBlock):
             vv = self.__content[ii]
             if name is vv:
                 # Perform deep copy of tokens to prevent same object existing in multiple places.
-                self.__content[ii: ii + 1] = [GlslParen("(")] + copy.deepcopy(tokens) + [GlslParen(")")]
+                self.__content[ii : ii + 1] = (
+                    [GlslParen("(")] + copy.deepcopy(tokens) + [GlslParen(")")]
+                )
                 return True
         return False
 
@@ -84,8 +88,10 @@ class GlslBlockStatement(GlslBlock):
                 break
             content = simplify_pass(self.__content)
             if not content and self.__content:
-                raise RuntimeError("content '%s' simplified to '%s'" %
-                                   (str(list(map(str, self.__content))), str(content)))
+                raise RuntimeError(
+                    "content '%s' simplified to '%s'"
+                    % (str(list(map(str, self.__content))), str(content))
+                )
             if content == self.__content:
                 break
             self.__content = content
@@ -99,6 +105,7 @@ class GlslBlockStatement(GlslBlock):
     def __str__(self):
         """String representation."""
         return "Statement(%i)" % (len(self.__content))
+
 
 ########################################
 # Functions ############################
@@ -123,8 +130,12 @@ def glsl_parse_statement(source, explicit=True):
             if elem.isCurlyBrace():
                 raise RuntimeError("scope declaration within statement")
         # Statement end.
-        elif (elem.format(False) in (",", ";")) and (paren_count == 0) and (bracket_count == 0):
-            return (GlslBlockStatement(lst, elem), source[ii + 1:])
+        elif (
+            (elem.format(False) in (",", ";"))
+            and (paren_count == 0)
+            and (bracket_count == 0)
+        ):
+            return (GlslBlockStatement(lst, elem), source[ii + 1 :])
         # Element is going into the statement.
         lst += [elem]
     # Was ok to have a statement without a terminator.
@@ -156,7 +167,9 @@ def simplify_pass(lst):
     if lst:
         tree = token_tree_build(lst)
         if not tree:
-            raise RuntimeError("could not build tree from '%s'" % (str(list(map(str, lst)))))
+            raise RuntimeError(
+                "could not build tree from '%s'" % (str(list(map(str, lst))))
+            )
         if token_tree_simplify(tree):
             return tree.flatten()
     # Nothign to simplify, just return original tree.

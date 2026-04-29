@@ -22,17 +22,24 @@ class GlslBlockCall(GlslBlock):
     def format(self, force):
         """Return formatted output."""
         lst = "".join([x.format(force) for x in self._children])
-        return "%s(%s)%s" % (self.__name.format(force), lst, self.__terminator.format(force))
+        return "%s(%s)%s" % (
+            self.__name.format(force),
+            lst,
+            self.__terminator.format(force),
+        )
 
     def replaceTerminator(self, op):
         """Replace terminator with given element."""
-        if not (op in (',', ';')):
-            raise RuntimeError("invalid replacement terminator for GlslBlockCall: '%s'" % (op))
+        if not (op in (",", ";")):
+            raise RuntimeError(
+                "invalid replacement terminator for GlslBlockCall: '%s'" % (op)
+            )
         self.__terminator = op
 
     def __str__(self):
         """String representation."""
         return "Call('%s')" % (self.__name.getName())
+
 
 ########################################
 # Functions ############################
@@ -49,7 +56,9 @@ def glsl_parse_call(source):
         if not statements:
             return (None, source)
         if scope_remaining:
-            raise RuntimeError("call scope cannot have remaining elements: '%s'" % str(scope_remaining))
+            raise RuntimeError(
+                "call scope cannot have remaining elements: '%s'" % str(scope_remaining)
+            )
         return (GlslBlockCall(name, statements, terminator), remaining)
     return (GlslBlockCall(name, [], terminator), remaining)
 

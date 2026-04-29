@@ -23,15 +23,13 @@ class GlslControl:
             return "GlslControl('%s %s')" % (self.__control1, self.__control2)
         return "GlslControl('%s')" % (self.__control1)
 
+
 ########################################
 # Globals ##############################
 ########################################
 
 
-g_control = ("for",
-             "if",
-             "else",
-             "while")
+g_control = ("for", "if", "else", "while")
 
 ########################################
 # Functions ############################

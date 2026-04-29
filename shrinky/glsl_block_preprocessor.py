@@ -24,6 +24,7 @@ class GlslBlockPreprocessor(GlslBlock):
         """String representation."""
         return "Preprocessor('%s')" % (self.__content)
 
+
 ########################################
 # Globals ##############################
 ########################################
@@ -38,7 +39,7 @@ g_directives = ("version",)
 
 def glsl_parse_preprocessor(source):
     """Parse preprocessor line."""
-    match = re.match(r'^\s*#\s*(\S+)\s+.*$', source)
+    match = re.match(r"^\s*#\s*(\S+)\s+.*$", source)
     if match:
         if match.group(1) in g_directives:
             return GlslBlockPreprocessor(source)

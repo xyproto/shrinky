@@ -48,7 +48,7 @@ class Assembler:
 
     def format_align(self, op):
         """Get alignmen string."""
-        return (".balign %i\n" % (op))
+        return ".balign %i\n" % (op)
 
     def format_block_comment(self, desc, length=40):
         """Get a block-formatted comment."""
@@ -83,7 +83,7 @@ class Assembler:
         if not value_strings:
             raise RuntimeError("unable to format value: '%s'" % (str(value)))
         value = ", ".join(value_strings)
-        if value.startswith("\"") and 1 == size:
+        if value.startswith('"') and 1 == size:
             return indent + self.__string + " " + value + "\n"
         if 1 == size:
             return indent + self.__byte + " " + value + "\n"

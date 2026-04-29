@@ -101,7 +101,12 @@ class AssemblerVariable:
         indent = get_indent(indent)
         for ii in self.__label_pre:
             ret += assembler.format_label(ii)
-        if isinstance(self.__value, str) and self.__value.startswith("\"") and label and self.__name:
+        if (
+            isinstance(self.__value, str)
+            and self.__value.startswith('"')
+            and label
+            and self.__name
+        ):
             ret += assembler.format_label("%s_%s" % (label, self.__name))
         formatted_comment = assembler.format_comment(self.__desc, indent)
         formatted_data = assembler.format_data(self.__size, self.__value, indent)
@@ -183,21 +188,24 @@ class AssemblerVariable:
         """String representation."""
         int_size = int(self.__size)
         if 1 == int_size:
-            ret = 'byte:'
+            ret = "byte:"
         elif 2 == int_size:
-            ret = 'short'
+            ret = "short"
         elif 4 == int_size:
-            ret = 'long'
+            ret = "long"
         elif 8 == int_size:
-            ret = 'quad'
+            ret = "quad"
         else:
-            raise RuntimeError("unknown size %i in an assembler variable" % (self.__size))
-        ret += ': ' + str(self.__value)
+            raise RuntimeError(
+                "unknown size %i in an assembler variable" % (self.__size)
+            )
+        ret += ": " + str(self.__value)
         if self.__name:
             ret += " (%s)" % (self.__name)
         if self.__desc:
             ret += " '%s'" % (self.__desc)
         return ret
+
 
 ########################################
 # Functions ############################

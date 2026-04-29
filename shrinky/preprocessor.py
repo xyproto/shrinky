@@ -16,7 +16,12 @@ class Preprocessor(Compiler):
 
     def preprocess(self, op):
         """Preprocess a file, return output."""
-        args = [self.get_command(), op] + self._compiler_flags_extra + self._definitions + self._include_directories
+        args = (
+            [self.get_command(), op]
+            + self._compiler_flags_extra
+            + self._definitions
+            + self._include_directories
+        )
         if self.command_basename_startswith("cl."):
             args += ["/E"]
         (so, se) = run_command(args)

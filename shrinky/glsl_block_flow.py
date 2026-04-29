@@ -22,6 +22,7 @@ class GlslBlockFlow(GlslBlock):
             raise RuntimeError("GlslBlockFlow::format(), length of children != 1")
         return "".join([x.format(force) for x in self._children])
 
+
 ########################################
 # Functions ############################
 ########################################

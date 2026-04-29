@@ -64,8 +64,8 @@ class GlslInt:
         for ii in reversed(list(range(len(rest)))):
             if rest[ii] != "0":
                 if ii < (len(rest) - 1):
-                    zeroes_back = rest[ii + 1:]
-                    rest = rest[:ii + 1]
+                    zeroes_back = rest[ii + 1 :]
+                    rest = rest[: ii + 1]
                 break
         # If length of rest is smaller than truncation, just return it.
         if len(rest) <= op:
@@ -81,6 +81,7 @@ class GlslInt:
         """String representation."""
         return "GlslInt('%s')" % (self.__string)
 
+
 ########################################
 # Functions ############################
 ########################################
@@ -88,7 +89,7 @@ class GlslInt:
 
 def interpret_int(source):
     """Try to interpret integer."""
-    if re.match(r'^\-?\d+f?$', source):
+    if re.match(r"^\-?\d+f?$", source):
         # Suffixing number with 'f' is not allowd according to the spec, but NVidia accepts it.
         if source[-1] == "f":
             print("WARNING: GLSL: discarding number literal suffix for '%s'" % (source))

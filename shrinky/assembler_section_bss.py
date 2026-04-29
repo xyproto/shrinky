@@ -19,7 +19,10 @@ class AssemblerSectionBss(AssemblerSection):
     def add_element(self, op):
         """Add one variable element."""
         if op in self.__elements:
-            print("WARNING: trying to add .%s element twice: %s" % (sekf.__name, str(element)))
+            print(
+                "WARNING: trying to add .%s element twice: %s"
+                % (sekf.__name, str(element))
+            )
             return
         self.__elements += [op]
         self.__elements.sort()
@@ -40,9 +43,13 @@ class AssemblerSectionBss(AssemblerSection):
         self.add_content(assembler.format_label("bss_start"))
         cumulative = 0
         for ii in self.__elements:
-            self.add_content(assembler.format_equ(ii.get_name(), "bss_start + %i" % (cumulative)))
+            self.add_content(
+                assembler.format_equ(ii.get_name(), "bss_start + %i" % (cumulative))
+            )
             cumulative += ii.get_size()
-        self.add_content(assembler.format_equ("bss_end", "bss_start + %i" % (cumulative)))
+        self.add_content(
+            assembler.format_equ("bss_end", "bss_start + %i" % (cumulative))
+        )
 
     def get_alignment(self):
         """Get alignment. May be zero."""

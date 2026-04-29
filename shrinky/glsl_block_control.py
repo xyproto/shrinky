@@ -34,7 +34,10 @@ class GlslBlockControl(GlslBlock):
         # Simple case.
         if self.__control.format(False) == "else":
             if self.__declaration or self.__statements:
-                raise RuntimeError("'%s' should not have declaration or content" % (str(self.__control)))
+                raise RuntimeError(
+                    "'%s' should not have declaration or content"
+                    % (str(self.__control))
+                )
             if target[:1].isalnum():
                 return ret + " " + target
             return ret + target
@@ -42,7 +45,9 @@ class GlslBlockControl(GlslBlock):
         ret += "("
         if self.__declaration:
             ret += self.__declaration.format(force)
-        return ret + ("%s)%s" % ("".join([x.format(force) for x in self.__statements]), target))
+        return ret + (
+            "%s)%s" % ("".join([x.format(force) for x in self.__statements]), target)
+        )
 
     def getTarget(self):
         """Accessor."""
@@ -58,6 +63,7 @@ class GlslBlockControl(GlslBlock):
     def __str__(self):
         """String representation."""
         return "Control('%s')" % (self.__control.format(False))
+
 
 ########################################
 # Functions ############################
@@ -87,7 +93,9 @@ def glsl_parse_control(source):
     if not statements:
         return (None, source)
     if scope_remaining:
-        raise RuntimeError("control scope cannot have remaining elements: '%s'" % str(scope_remaining))
+        raise RuntimeError(
+            "control scope cannot have remaining elements: '%s'" % str(scope_remaining)
+        )
     return (GlslBlockControl(control, declaration, statements), remaining)
 
 

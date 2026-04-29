@@ -35,7 +35,9 @@ def executable_find(proposition, default_list, name):
     """Try to find given executable from proposition and default list."""
     if proposition:
         if not executable_check(proposition):
-            raise RuntimeError("could not use supplied '%s' executable '%s'" % (name, proposition))
+            raise RuntimeError(
+                "could not use supplied '%s' executable '%s'" % (name, proposition)
+            )
         return proposition
     ret = executable_search(default_list, name)
     if not ret:
@@ -109,7 +111,7 @@ def is_verbose():
 
 def labelify(op):
     """Take string as input. Convert into string that passes as label."""
-    return re.sub(r'[\/\.]', '_', op)
+    return re.sub(r"[\/\.]", "_", op)
 
 
 def listify(lhs, rhs=None):
@@ -154,7 +156,9 @@ def locate(pth, fn, previous_paths=None):
     try:
         for ii in os.listdir(pth):
             ret = os.path.normpath(pth + "/" + ii)
-            if (isinstance(fn, str) and (ii == fn)) or ((not isinstance(fn, str)) and fn.match(ii)):
+            if (isinstance(fn, str) and (ii == fn)) or (
+                (not isinstance(fn, str)) and fn.match(ii)
+            ):
                 if os.path.isfile(ret):
                     return ret
             elif os.path.isdir(ret):
@@ -182,7 +186,9 @@ def run_command(lst, decode_output=True):
         proc_stderr = proc_stderr.decode()
     returncode = proc.returncode
     if 0 != proc.returncode:
-        raise RuntimeError("command failed: %i, stderr output:\n%s" % (proc.returncode, proc_stderr))
+        raise RuntimeError(
+            "command failed: %i, stderr output:\n%s" % (proc.returncode, proc_stderr)
+        )
     return (proc_stdout, proc_stderr)
 
 

@@ -56,7 +56,10 @@ class GlslName:
     def lock(self, op):
         """Lock rename into given name."""
         if self.__rename:
-            raise RuntimeError("attempting to lock already locked rename '%s' -> '%s'" % (self.__name, self.__rename))
+            raise RuntimeError(
+                "attempting to lock already locked rename '%s' -> '%s'"
+                % (self.__name, self.__rename)
+            )
         if not isinstance(op, str):
             raise RuntimeError("rename must be string, '%s' given" % (str(op)))
         self.__rename = op
@@ -70,20 +73,25 @@ class GlslName:
     def setAccess(self, op):
         """Set given element as accessing this."""
         if self.__access:
-            raise RuntimeError("'%s' already has access '%s'" % (str(self), str(self.__access)))
+            raise RuntimeError(
+                "'%s' already has access '%s'" % (str(self), str(self.__access))
+            )
         self.__access = op
 
     def setType(self, op):
         """Set type information of this."""
         if self.__typeid and (self.__typeid != op):
-            raise RuntimeError("conflicting types '%s' and '%s' for '%s'" % (str(self.__typeid), str(op), self.__name))
+            raise RuntimeError(
+                "conflicting types '%s' and '%s' for '%s'"
+                % (str(self.__typeid), str(op), self.__name)
+            )
         self.__typeid = op
 
     def __eq__(self, other):
         """Equals operator."""
         if is_glsl_name(other):
-            return (other.resolveName() == self.resolveName())
-        return (self.resolveName() == other)
+            return other.resolveName() == self.resolveName()
+        return self.resolveName() == other
 
     def __ne__(self, other):
         """Not equals operator."""
@@ -98,6 +106,7 @@ class GlslName:
         if self.__rename:
             return "GlslName('%s' => '%s')" % (self.__name, self.__rename)
         return "GlslName('%s')" % (self.__name)
+
 
 ########################################
 # Globals ##############################
@@ -160,9 +169,7 @@ g_primitives = (
     "triangle_strip",
 )
 
-g_vec2 = (
-    "gl_FragCoord",
-)
+g_vec2 = ("gl_FragCoord",)
 
 g_vec4 = (
     "gl_FragColor",
@@ -193,7 +200,7 @@ def interpret_name(source):
     """Try to interpret name identifier."""
     # All reserved strings other than names here should have been interpreted before.
     # Names are interpreted last.
-    if re.match(r'^([A-Za-z][A-Za-z0-9_]*)$', source, re.I):
+    if re.match(r"^([A-Za-z][A-Za-z0-9_]*)$", source, re.I):
         return GlslName(source)
     return None
 

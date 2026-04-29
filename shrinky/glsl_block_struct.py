@@ -26,7 +26,11 @@ class GlslBlockStruct(GlslBlock):
     def format(self, force):
         """Return formatted output."""
         lst = "".join([x.format(force) for x in self.__members])
-        ret = ("struct %s{%s}" % (self.__type_name.format(force), lst, self.__name.format(force)))
+        ret = "struct %s{%s}" % (
+            self.__type_name.format(force),
+            lst,
+            self.__name.format(force),
+        )
         if self.__name:
             ret += self.__name.format(force)
         if self.__size:
@@ -56,6 +60,7 @@ class GlslBlockStruct(GlslBlock):
     def __str__(self):
         """String representation."""
         return "Struct(%i)" % (len(self.__content))
+
 
 ########################################
 # Functions ############################

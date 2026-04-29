@@ -52,17 +52,22 @@ class Elfling:
         info = readelf_get_info(src)
         starting_size = os.path.getsize(src)
         if starting_size != info["size"]:
-            raise RuntimeError("size of file '%s' differs from header claim: %i != %i" %
-                               (src, starting_size, info["size"]))
+            raise RuntimeError(
+                "size of file '%s' differs from header claim: %i != %i"
+                % (src, starting_size, info["size"])
+            )
         rfd = open(src, "rb")
         wfd = open(dst, "wb")
         data = rfd.read(starting_size)
-        wfd.write(data[info["entry"]:])
+        wfd.write(data[info["entry"] :])
         rfd.close()
         wfd.close()
         self.__uncompressed_size = len(data) - info["entry"]
         if is_verbose():
-            print("Wrote compressable program block '%s': %i bytes" % (dst, self.__uncompressed_size))
+            print(
+                "Wrote compressable program block '%s': %i bytes"
+                % (dst, self.__uncompressed_size)
+            )
         self.__contexts = []
         self.__weights = []
         (so, se) = run_command([self.__command, dst])
@@ -76,7 +81,10 @@ class Elfling:
                     self.__weights += [int(individual_term[0], 10)]
                     self.__contexts += [int(individual_term[1], 16)]
         if is_verbose():
-            print("Program block compressed into '%s': %i bytes" % (dst + ".pack", compressed_size))
+            print(
+                "Program block compressed into '%s': %i bytes"
+                % (dst + ".pack", compressed_size)
+            )
             print("Compression weights: %s" % (str(self.__weights)))
             print("Compression contexts: %s" % (str(self.__contexts)))
         rfd = open(dst + ".pack", "rb")
@@ -85,8 +93,10 @@ class Elfling:
         uncompressed_size = rfd.read(4)
         uncompressed_size = (struct.unpack("I", uncompressed_size))[0]
         if uncompressed_size != self.__uncompressed_size:
-            raise RuntimeError("size given to packer does not match size information in file: %i != %i" %
-                               (self.__uncompressed_size, uncompressed_size))
+            raise RuntimeError(
+                "size given to packer does not match size information in file: %i != %i"
+                % (self.__uncompressed_size, uncompressed_size)
+            )
         context_count = rfd.read(1)
         context_count = (struct.unpack("B", context_count))[0]
         for ii in range(context_count):
@@ -94,16 +104,22 @@ class Elfling:
         for ii in range(context_count):
             compressed_contexts += struct.unpack("B", rfd.read(1))
         if compressed_contexts != self.__contexts:
-            raise RuntimeError("contexts reported by packer do not match context information in file: %s != %s" %
-                               (str(self.__contexts), str(compressed_contexts)))
+            raise RuntimeError(
+                "contexts reported by packer do not match context information in file: %s != %s"
+                % (str(self.__contexts), str(compressed_contexts))
+            )
         if compressed_weights != self.__weights:
-            raise RuntimeError("weights reported by packer do not match weight information in file: %s != %s" %
-                               (str(self.__weights), str(compressed_weights)))
+            raise RuntimeError(
+                "weights reported by packer do not match weight information in file: %s != %s"
+                % (str(self.__weights), str(compressed_weights))
+            )
         read_data = rfd.read()
         rfd.close()
         if len(read_data) != compressed_size:
-            raise RuntimeError("size reported by packer does not match length of file: %i != %i" %
-                               (compressed_size, len(read_data)))
+            raise RuntimeError(
+                "size reported by packer does not match length of file: %i != %i"
+                % (compressed_size, len(read_data))
+            )
         self.__data = []
         for ii in read_data:
             self.__data += struct.unpack("B", ii)
@@ -131,11 +147,21 @@ class Elfling:
 
     def generate_c_source(self, definition):
         """Generate the C uncompressor source."""
-        ret = g_template_elfling_source % (self.generate_c_data_block(), ELFLING_WORK,
-                                           ELFLING_OUTPUT, ELFLING_UNCOMPRESSED)
+        ret = g_template_elfling_source % (
+            self.generate_c_data_block(),
+            ELFLING_WORK,
+            ELFLING_OUTPUT,
+            ELFLING_UNCOMPRESSED,
+        )
         ret += g_template_entry_point % (definition)
-        ret += g_template_elfling_main % (len(self.__contexts), ELFLING_WORK, self.get_input_offset(),
-                                          ELFLING_OUTPUT, self.get_uncompressed_size(), ELFLING_UNCOMPRESSED)
+        ret += g_template_elfling_main % (
+            len(self.__contexts),
+            ELFLING_WORK,
+            self.get_input_offset(),
+            ELFLING_OUTPUT,
+            self.get_uncompressed_size(),
+            ELFLING_UNCOMPRESSED,
+        )
         return ret
 
     def get_contexts(self):

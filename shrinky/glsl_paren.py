@@ -45,9 +45,9 @@ class GlslParen:
         if not is_glsl_paren(other):
             return False
         if self.__paren == "(":
-            return (other == ")")
+            return other == ")"
         elif self.__paren == "[":
-            return (other == "]")
+            return other == "]"
         return False
 
     def update(self, elem, count):
@@ -88,7 +88,7 @@ class GlslParen:
         """Equals operator."""
         if is_glsl_paren(other) and (self.__paren == other.getParen()):
             return True
-        return (self.__paren == other)
+        return self.__paren == other
 
     def __ne__(self, other):
         """Not equals operator."""
@@ -97,6 +97,7 @@ class GlslParen:
     def __str__(self):
         """String representation."""
         return "GlslParen('%s')" % (self.__paren)
+
 
 ########################################
 # Functions ############################

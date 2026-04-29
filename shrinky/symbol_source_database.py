@@ -15,7 +15,9 @@ class SymbolSourceDatabase:
         self.__symbols = {}
         for ii in op:
             if 5 != len(ii):
-                raise RuntimeError("incorrect length for sybol source data: %i" % (len(ii)))
+                raise RuntimeError(
+                    "incorrect length for sybol source data: %i" % (len(ii))
+                )
             name = ii[0]
             self.__symbols[name] = SymbolSource(name, ii[1], ii[2], ii[3], ii[4])
 
@@ -55,21 +57,31 @@ class SymbolSourceDatabase:
         if not source:
             return None
         if is_verbose():
-            print("%i extra symbols required: %s" % (len(compiled_symbol_names), str(compiled_symbol_names)))
-        subst = {"HEADERS": "\n".join(["#include <%s>" % (x) for x in headers]),
-                 "PROTOTYPES": "\n\n".join(prototypes),
-                 "SOURCE": "\n\n".join(source)
-                 }
+            print(
+                "%i extra symbols required: %s"
+                % (len(compiled_symbol_names), str(compiled_symbol_names))
+            )
+        subst = {
+            "HEADERS": "\n".join(["#include <%s>" % (x) for x in headers]),
+            "PROTOTYPES": "\n\n".join(prototypes),
+            "SOURCE": "\n\n".join(source),
+        }
         return g_template_extra_source.format(subst)
+
 
 ########################################
 # Globals ##############################
 ########################################
 
 
-g_symbol_sources = SymbolSourceDatabase((
-    ("__aeabi_idivmod", "__aeabi_uidivmod", None, "extern \"C\" int __aeabi_idivmod(int, int);",
-     """int __aeabi_idivmod(int num, int den)
+g_symbol_sources = SymbolSourceDatabase(
+    (
+        (
+            "__aeabi_idivmod",
+            "__aeabi_uidivmod",
+            None,
+            'extern "C" int __aeabi_idivmod(int, int);',
+            """int __aeabi_idivmod(int num, int den)
 {
   int quotient_mul = 1;
   int remainder_mul = 1;\n
@@ -96,9 +108,14 @@ g_symbol_sources = SymbolSourceDatabase((
   r1 *= remainder_mul;
   asm("" : /**/ : "r"(r1) : /**/); // output: remainder
   return ret;
-}"""),
-    ("__aeabi_uidivmod", None, None, "extern \"C\" unsigned __aeabi_uidivmod(unsigned, unsigned);",
-        """unsigned __aeabi_uidivmod(unsigned num, unsigned den)
+}""",
+        ),
+        (
+            "__aeabi_uidivmod",
+            None,
+            None,
+            'extern "C" unsigned __aeabi_uidivmod(unsigned, unsigned);',
+            """unsigned __aeabi_uidivmod(unsigned num, unsigned den)
 {
   unsigned shift = 1;
   unsigned quotient = 0;\n
@@ -125,19 +142,29 @@ g_symbol_sources = SymbolSourceDatabase((
   volatile register int r1 asm("r1") = num;
   asm("" : /**/ : "r"(r1) : /**/); // output: remainder
   return quotient; // r0
-}"""),
-    ("memset", None, ("cinttypes", "cstring"), None,
-        """void* memset(void *ptr, int value, size_t num)
+}""",
+        ),
+        (
+            "memset",
+            None,
+            ("cinttypes", "cstring"),
+            None,
+            """void* memset(void *ptr, int value, size_t num)
 {
   for(size_t ii = 0; (ii < num); ++ii)
   {
     reinterpret_cast<uint8_t*>(ptr)[ii] = static_cast<uint8_t>(value);
   }\n
   return ptr;
-}"""),
-    # TODO: this is stub from Clang project, replace with smaller but dumber version later.
-    ("__powisf2", None, None, "extern \"C\" float __powisf2(float, int);",
-        """float __powisf2(float a, int b)
+}""",
+        ),
+        # TODO: this is stub from Clang project, replace with smaller but dumber version later.
+        (
+            "__powisf2",
+            None,
+            None,
+            'extern "C" float __powisf2(float, int);',
+            """float __powisf2(float a, int b)
 {
     const int recip = b < 0;
     float r = 1;
@@ -151,8 +178,10 @@ g_symbol_sources = SymbolSourceDatabase((
         a *= a;
     }
     return recip ? 1/r : r;
-}"""),
-))
+}""",
+        ),
+    )
+)
 
 g_template_extra_source = Template("""[[HEADERS]]\n
 [[PROTOTYPES]]\n
