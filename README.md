@@ -4,11 +4,9 @@ Minimal binary generator for 64-bit ELF files, for Arch Linux. Also tested on Fe
 
 For an example demoscene 4k intro that uses Shrinky, check out [shrinky-intro](https://github.com/xyproto/shrinky-intro).
 
-This is a fork of [dnload by Faemiyah](http://faemiyah.fi/demoscene/dnload).
+This is a fork of [dnload by Faemiyah](http://faemiyah.fi/demoscene/dnload). I can only take creds for making it work on Arch and Fedora.
 
-`shrinky` is a script for generating minimal ELF binaries from C code.
-It serves no practical real-world use case, but can be utilized to aid
-in the creation of size-limited demoscene productions.
+`shrinky` is a script for generating minimal ELF binaries from C code. It serves no practical real-world use case, but can be utilized to aid in the creation of size-limited demoscene productions.
 
 The purpose of `shrinky` is to make modifications that makes `dnload` simpler to use on Arch Linux.
 
